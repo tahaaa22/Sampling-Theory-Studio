@@ -1,7 +1,7 @@
 import sys
 from pyqtgraph import PlotWidget
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+import ApplicationManager
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -137,7 +137,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        self.Load_Button = QtWidgets.QPushButton(self.groupBox_2)
+        self.Load_Button = QtWidgets.QPushButton(self.groupBox_2, clicked = lambda: MAESTRO.load_signal())
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(True)
@@ -740,6 +740,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
+    MAESTRO = ApplicationManager.ApplicationManager(ui)
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
