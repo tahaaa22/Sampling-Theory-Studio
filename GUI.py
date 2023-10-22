@@ -137,7 +137,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        self.Load_Button = QtWidgets.QPushButton(self.groupBox_2, clicked = lambda: MAESTRO.load_signal())
+        self.Load_Button = QtWidgets.QPushButton(self.groupBox_2, clicked = lambda: ApplicationManager.ApplicationManager.load_signal())
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(True)
