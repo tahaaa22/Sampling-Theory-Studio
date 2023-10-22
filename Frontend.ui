@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Sampling Studio</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: #1e1e2f;
@@ -54,7 +54,7 @@ color:white;
        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; font-weight:600;&quot;&gt;Signals Sampling Studio&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
@@ -102,7 +102,7 @@ p, li { white-space: pre-wrap; }
        </property>
        <attribute name="icon">
         <iconset>
-         <normaloff>../../Task 1/Signal-Viewer/Assets/load1.png</normaloff>../../Task 1/Signal-Viewer/Assets/load1.png</iconset>
+         <normaloff>../Task 1/Signal-Viewer/Assets/load1.png</normaloff>../Task 1/Signal-Viewer/Assets/load1.png</iconset>
        </attribute>
        <attribute name="title">
         <string>Load</string>
@@ -139,7 +139,7 @@ p, li { white-space: pre-wrap; }
              </property>
              <layout class="QGridLayout" name="gridLayout_10">
               <item row="1" column="0">
-               <widget class="QGraphicsView" name="Loaded_Signal_PlotWidget">
+               <widget class="PlotWidget" name="Loaded_Signal_PlotWidget">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>1</horstretch>
@@ -215,7 +215,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QGraphicsView" name="Load_Reconstructed_PlotWidget"/>
+               <widget class="PlotWidget" name="Load_Reconstructed_PlotWidget"/>
               </item>
              </layout>
             </widget>
@@ -264,14 +264,9 @@ p, li { white-space: pre-wrap; }
                     <layout class="QHBoxLayout" name="horizontalLayout_7">
                      <item>
                       <widget class="QPushButton" name="Load_Button">
-                       <property name="minimumSize">
-                        <size>
-                         <width>150</width>
-                         <height>34</height>
-                        </size>
-                       </property>
                        <property name="font">
                         <font>
+                         <pointsize>10</pointsize>
                          <weight>75</weight>
                          <bold>true</bold>
                         </font>
@@ -285,22 +280,9 @@ color: white;</string>
                        </property>
                        <property name="icon">
                         <iconset>
-                         <normaloff>../../Task 1/Signal-Viewer/Assets/load1.png</normaloff>../../Task 1/Signal-Viewer/Assets/load1.png</iconset>
+                         <normaloff>Assets/load1.png</normaloff>Assets/load1.png</iconset>
                        </property>
                       </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_6">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
                      </item>
                      <item>
                       <widget class="QComboBox" name="Load_Signals_ComboBox">
@@ -312,12 +294,13 @@ color: white;</string>
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>150</width>
+                         <width>0</width>
                          <height>0</height>
                         </size>
                        </property>
                        <property name="font">
                         <font>
+                         <pointsize>10</pointsize>
                          <weight>75</weight>
                          <bold>true</bold>
                         </font>
@@ -450,8 +433,8 @@ color: white</string>
                          </property>
                          <property name="iconSize">
                           <size>
-                           <width>55</width>
-                           <height>55</height>
+                           <width>50</width>
+                           <height>50</height>
                           </size>
                          </property>
                          <property name="checked">
@@ -494,7 +477,7 @@ color: white</string>
                           <enum>QSlider::TicksBelow</enum>
                          </property>
                          <property name="tickInterval">
-                          <number>1</number>
+                          <number>5</number>
                          </property>
                         </widget>
                        </item>
@@ -505,6 +488,9 @@ color: white</string>
                            <weight>75</weight>
                            <bold>true</bold>
                           </font>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">border:none;</string>
                          </property>
                          <property name="frameShadow">
                           <enum>QFrame::Plain</enum>
@@ -574,7 +560,7 @@ color: white</string>
                           <enum>QSlider::TicksBelow</enum>
                          </property>
                          <property name="tickInterval">
-                          <number>1</number>
+                          <number>5</number>
                          </property>
                         </widget>
                        </item>
@@ -586,6 +572,9 @@ color: white</string>
                            <weight>75</weight>
                            <bold>true</bold>
                           </font>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">border:none;</string>
                          </property>
                          <property name="frameShadow">
                           <enum>QFrame::Plain</enum>
@@ -660,7 +649,7 @@ color: white</string>
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QGraphicsView" name="Load_Difference_PlotWidget">
+               <widget class="PlotWidget" name="Load_Difference_PlotWidget">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>1</horstretch>
@@ -680,7 +669,7 @@ color: white</string>
       <widget class="QWidget" name="Compose">
        <attribute name="icon">
         <iconset>
-         <normaloff>Assets/writing.png</normaloff>Assets/writing.png</iconset>
+         <normaloff>writing.png</normaloff>writing.png</iconset>
        </attribute>
        <attribute name="title">
         <string>Compose</string>
@@ -741,7 +730,7 @@ color: white</string>
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QGraphicsView" name="Composed_Signal_PlotWidget">
+               <widget class="PlotWidget" name="Composed_Signal_PlotWidget">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>1</horstretch>
@@ -793,7 +782,7 @@ color: white</string>
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QGraphicsView" name="Compose_Reconstructed_PlotWidget"/>
+               <widget class="PlotWidget" name="Compose_Reconstructed_PlotWidget"/>
               </item>
              </layout>
             </widget>
@@ -836,32 +825,6 @@ color: white</string>
                  <string>Composed Signal Control</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_2">
-                 <item row="3" column="0">
-                  <spacer name="verticalSpacer_13">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item row="0" column="0">
-                  <spacer name="verticalSpacer_9">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
                  <item row="1" column="0">
                   <layout class="QVBoxLayout" name="verticalLayout">
                    <item>
@@ -870,6 +833,7 @@ color: white</string>
                       <widget class="QPushButton" name="Compose_Button">
                        <property name="font">
                         <font>
+                         <pointsize>10</pointsize>
                          <weight>75</weight>
                          <bold>true</bold>
                         </font>
@@ -879,7 +843,7 @@ color: white</string>
 color: white;</string>
                        </property>
                        <property name="text">
-                        <string>    Compose Signal</string>
+                        <string>  Compose Signal</string>
                        </property>
                        <property name="icon">
                         <iconset>
@@ -903,6 +867,7 @@ color: white;</string>
                        </property>
                        <property name="font">
                         <font>
+                         <pointsize>10</pointsize>
                          <weight>75</weight>
                          <bold>true</bold>
                         </font>
@@ -924,19 +889,6 @@ color: white</string>
                     </layout>
                    </item>
                    <item>
-                    <spacer name="verticalSpacer_19">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
                     <spacer name="verticalSpacer_4">
                      <property name="orientation">
                       <enum>Qt::Vertical</enum>
@@ -955,6 +907,7 @@ color: white</string>
                       <widget class="QPushButton" name="Compose_Remove_Component_Button">
                        <property name="font">
                         <font>
+                         <pointsize>10</pointsize>
                          <weight>75</weight>
                          <bold>true</bold>
                         </font>
@@ -975,19 +928,6 @@ color: white;</string>
                     </layout>
                    </item>
                    <item>
-                    <spacer name="verticalSpacer_17">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
                     <spacer name="verticalSpacer_5">
                      <property name="orientation">
                       <enum>Qt::Vertical</enum>
@@ -1006,6 +946,7 @@ color: white;</string>
                       <widget class="QLabel" name="label_10">
                        <property name="font">
                         <font>
+                         <pointsize>12</pointsize>
                          <weight>75</weight>
                          <bold>true</bold>
                         </font>
@@ -1020,22 +961,10 @@ color: white;</string>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_9">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
                       <widget class="QCheckBox" name="Compose_Hertz_CheckBox">
                        <property name="font">
                         <font>
+                         <pointsize>12</pointsize>
                          <weight>75</weight>
                          <bold>true</bold>
                         </font>
@@ -1059,25 +988,13 @@ color: white;</string>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_10">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
                       <widget class="QCheckBox" name="Compose_x2Fmax_CheckBox">
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
                        <property name="font">
                         <font>
+                         <pointsize>12</pointsize>
                          <weight>75</weight>
                          <bold>true</bold>
                         </font>
@@ -1094,8 +1011,8 @@ color: white;</string>
                        </property>
                        <property name="iconSize">
                         <size>
-                         <width>55</width>
-                         <height>55</height>
+                         <width>50</width>
+                         <height>50</height>
                         </size>
                        </property>
                        <property name="checked">
@@ -1103,33 +1020,7 @@ color: white;</string>
                        </property>
                       </widget>
                      </item>
-                     <item>
-                      <spacer name="horizontalSpacer_8">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
                     </layout>
-                   </item>
-                   <item>
-                    <spacer name="verticalSpacer_18">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
                    </item>
                    <item>
                     <spacer name="verticalSpacer_6">
@@ -1164,7 +1055,7 @@ color: white;</string>
                         <enum>QSlider::TicksBelow</enum>
                        </property>
                        <property name="tickInterval">
-                        <number>1</number>
+                        <number>5</number>
                        </property>
                       </widget>
                      </item>
@@ -1176,6 +1067,9 @@ color: white;</string>
                          <bold>true</bold>
                         </font>
                        </property>
+                       <property name="styleSheet">
+                        <string notr="true">border:none;</string>
+                       </property>
                        <property name="frameShadow">
                         <enum>QFrame::Plain</enum>
                        </property>
@@ -1185,19 +1079,6 @@ color: white;</string>
                       </widget>
                      </item>
                     </layout>
-                   </item>
-                   <item>
-                    <spacer name="verticalSpacer_16">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
                    </item>
                    <item>
                     <spacer name="verticalSpacer_7">
@@ -1216,6 +1097,7 @@ color: white;</string>
                     <widget class="QLabel" name="label_11">
                      <property name="font">
                       <font>
+                       <pointsize>10</pointsize>
                        <weight>75</weight>
                        <bold>true</bold>
                       </font>
@@ -1249,7 +1131,7 @@ color: white;</string>
                         <enum>QSlider::TicksBelow</enum>
                        </property>
                        <property name="tickInterval">
-                        <number>1</number>
+                        <number>5</number>
                        </property>
                       </widget>
                      </item>
@@ -1260,6 +1142,9 @@ color: white;</string>
                          <weight>75</weight>
                          <bold>true</bold>
                         </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">border:none;</string>
                        </property>
                        <property name="frameShadow">
                         <enum>QFrame::Plain</enum>
@@ -1285,22 +1170,10 @@ color: white;</string>
                     </spacer>
                    </item>
                    <item>
-                    <spacer name="verticalSpacer_14">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
                     <widget class="QLabel" name="label_12">
                      <property name="font">
                       <font>
+                       <pointsize>10</pointsize>
                        <weight>75</weight>
                        <bold>true</bold>
                       </font>
@@ -1334,7 +1207,7 @@ color: white;</string>
                         <enum>QSlider::TicksBelow</enum>
                        </property>
                        <property name="tickInterval">
-                        <number>1</number>
+                        <number>5</number>
                        </property>
                       </widget>
                      </item>
@@ -1345,6 +1218,9 @@ color: white;</string>
                          <weight>75</weight>
                          <bold>true</bold>
                         </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">border:none;</string>
                        </property>
                        <property name="frameShadow">
                         <enum>QFrame::Plain</enum>
@@ -1370,22 +1246,10 @@ color: white;</string>
                     </spacer>
                    </item>
                    <item>
-                    <spacer name="verticalSpacer_12">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
                     <widget class="QLabel" name="label_13">
                      <property name="font">
                       <font>
+                       <pointsize>10</pointsize>
                        <weight>75</weight>
                        <bold>true</bold>
                       </font>
@@ -1419,7 +1283,7 @@ color: white;</string>
                         <enum>QSlider::TicksBelow</enum>
                        </property>
                        <property name="tickInterval">
-                        <number>1</number>
+                        <number>5</number>
                        </property>
                       </widget>
                      </item>
@@ -1430,6 +1294,9 @@ color: white;</string>
                          <weight>75</weight>
                          <bold>true</bold>
                         </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">border:none;</string>
                        </property>
                        <property name="frameShadow">
                         <enum>QFrame::Plain</enum>
@@ -1443,7 +1310,7 @@ color: white;</string>
                    </item>
                   </layout>
                  </item>
-                 <item row="4" column="0">
+                 <item row="3" column="0">
                   <spacer name="verticalSpacer_11">
                    <property name="orientation">
                     <enum>Qt::Vertical</enum>
@@ -1456,8 +1323,21 @@ color: white;</string>
                    </property>
                   </spacer>
                  </item>
+                 <item row="0" column="0">
+                  <spacer name="verticalSpacer_9">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                  <item row="2" column="0">
-                  <spacer name="verticalSpacer_15">
+                  <spacer name="verticalSpacer_13">
                    <property name="orientation">
                     <enum>Qt::Vertical</enum>
                    </property>
@@ -1515,7 +1395,7 @@ color: white;</string>
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QGraphicsView" name="Compose_Difference_PlotWidget">
+               <widget class="PlotWidget" name="Compose_Difference_PlotWidget">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>1</horstretch>
@@ -1542,12 +1422,19 @@ color: white;</string>
      <x>0</x>
      <y>0</y>
      <width>1299</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QGraphicsView</extends>
+   <header>pyqtgraph</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
