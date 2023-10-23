@@ -227,6 +227,7 @@ class Ui_MainWindow(object):
         self.Load_Sampling_Frequency_Slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.Load_Sampling_Frequency_Slider.setTickInterval(5)
         self.Load_Sampling_Frequency_Slider.setObjectName("Load_Sampling_Frequency_Slider")
+        self.Load_Sampling_Frequency_Slider.valueChanged.connect(lambda: MAESTRO.plot_samples(self.Load_Sampling_Frequency_Slider.value()))
         self.horizontalLayout_4.addWidget(self.Load_Sampling_Frequency_Slider)
         self.Load_Sampling_Frequency_LCD = QtWidgets.QLCDNumber(self.groupBox_2)
         font = QtGui.QFont()
@@ -238,6 +239,7 @@ class Ui_MainWindow(object):
         self.Load_Sampling_Frequency_LCD.setLineWidth(1)
         self.Load_Sampling_Frequency_LCD.setProperty("intValue", 0)
         self.Load_Sampling_Frequency_LCD.setObjectName("Load_Sampling_Frequency_LCD")
+        
         self.horizontalLayout_4.addWidget(self.Load_Sampling_Frequency_LCD)
         self.verticalLayout_3.addLayout(self.horizontalLayout_4)
         self.verticalLayout_4.addLayout(self.verticalLayout_3)
