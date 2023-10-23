@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QFileDialog
-import wfdb, numpy as np
+import wfdb, numpy as np, math, random
 import SignalClass
 class ApplicationManager:
     def __init__(self, ui_window, load_graph_1, load_graph_2, load_graph_3, compose_graph_1, compose_graph_2, compose_graph_3):
@@ -27,8 +27,10 @@ class ApplicationManager:
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen = 'b')
 
     def add_noise(self, SNR_value):
-        signal_power = np.mean(self.main_signal.Y_Coordinates) ** 2
-        noise_power = signal_power / SNR_value
-        noise = np.random.normal(0, np.sqrt(noise_power), len(self.main_signal.Y_Coordinates))
-        self.noisy_signal = SignalClass.Signal(self.main_signal.X_Coordinates, self.main_signal.Y_Coordinates + noise)
+        signal_power = sum(y ** 2 for y in self.main_signal.Y_Coordinates) / len(self.main_signal.Y_Coordinates)
+        noise_power = signal_power / (10**(SNR_value / 10))
+        noise_std = math.sqrt(noise_power)
+        noise = [random.gauss(0, noise_std) for _ in range(len(self.main_signal.Y_Coordinates))]
+        self.noisy_signal = SignalClass.Signal(self.main_signal.X_Coordinates, [s + n for s, n in zip(self.main_signal.Y_Coordinates, noise)])
+        self.load_graph_2.clear()
         self.load_graph_2.plot(self.noisy_signal.X_Coordinates, self.noisy_signal.Y_Coordinates, pen = 'b')
