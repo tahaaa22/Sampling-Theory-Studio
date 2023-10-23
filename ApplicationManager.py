@@ -65,7 +65,6 @@ class ApplicationManager:
         #difference = signal_data - reconstructed_signal
 
 
-
     def add_noise(self, SNR_value):
         signal_power = sum(y ** 2 for y in self.main_signal.Y_Coordinates) / len(self.main_signal.Y_Coordinates)
         noise_power = signal_power / (10**(SNR_value / 10))
