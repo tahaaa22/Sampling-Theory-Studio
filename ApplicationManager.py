@@ -13,6 +13,7 @@ class ApplicationManager:
         self.compose_graph_3 = compose_graph_3
         self.main_signal = None
         self.noisy_signal = None
+        self.component_count = 1
 
 
     def load_signal(self):
@@ -26,6 +27,7 @@ class ApplicationManager:
 
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen = 'b')
 
+
     def add_noise(self, SNR_value):
         signal_power = sum(y ** 2 for y in self.main_signal.Y_Coordinates) / len(self.main_signal.Y_Coordinates)
         noise_power = signal_power / (10**(SNR_value / 10))
@@ -34,3 +36,29 @@ class ApplicationManager:
         self.noisy_signal = SignalClass.Signal(self.main_signal.X_Coordinates, [s + n for s, n in zip(self.main_signal.Y_Coordinates, noise)])
         self.load_graph_2.clear()
         self.load_graph_2.plot(self.noisy_signal.X_Coordinates, self.noisy_signal.Y_Coordinates, pen = 'b')
+
+
+    def add_component(self):
+        
+        self.component_count += 1
+        Temporary_String = f"Component {self.component_count}"
+        self.ui_window.Compose_Components_ComboBox.addItem(Temporary_String)
+
+
+    def remove_component(self):
+
+        self.component_count -= 1
+        selected_index = self.ui_window.Compose_Components_ComboBox.currentIndex()
+        self.ui_window.Compose_Components_ComboBox.removeItem(selected_index)
+
+
+    def compose_signal(self):
+
+        magnitude_1 = self.ui_window.Compose_Signal_Magnitude_Slider.value()
+        frequency_1 = self.ui_window.Compose_Signal_Frequency_Slider.value()
+
+        t = np.linspace(0, 1, 500)
+        signal = magnitude_1 * np.sin(2 * np.pi * frequency_1 * t)
+
+        self.compose_graph_1.clear()
+        self.compose_graph_1.plot(t, signal, pen='g')
