@@ -26,9 +26,23 @@ class ApplicationManager:
 
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen = 'b')
 
+
     def add_noise(self, SNR_value):
         signal_power = np.mean(self.main_signal.Y_Coordinates) ** 2
         noise_power = signal_power / SNR_value
         noise = np.random.normal(0, np.sqrt(noise_power), len(self.main_signal.Y_Coordinates))
         self.noisy_signal = SignalClass.Signal(self.main_signal.X_Coordinates, self.main_signal.Y_Coordinates + noise)
         self.load_graph_2.plot(self.noisy_signal.X_Coordinates, self.noisy_signal.Y_Coordinates, pen = 'b')
+
+
+    def compose_signal(self):
+        
+        magnitude_1 = self.ui_window.Compose_Signal_Magnitude_Slider.value()
+        frequency_1 = self.ui_window.Compose_Signal_Frequency_Slider.value()
+
+
+        t = np.linspace(0, 1, 500)
+        signal = magnitude_1 * np.sin(2 * np.pi * frequency_1 * t)
+
+        self.compose_graph_1.clear()
+        self.compose_graph_1.plot(t, signal, pen='g')
