@@ -15,7 +15,6 @@ class ApplicationManager:
         self.noisy_signal = None
         self.component_count = 1
 
-
     def load_signal(self):
         File_Path, _ = QFileDialog.getOpenFileName(None, "Browse Signal", "", "All Files (*)")
         if File_Path:
@@ -27,7 +26,6 @@ class ApplicationManager:
 
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen = 'b')
 
-
     def add_noise(self, SNR_value):
         signal_power = sum(y ** 2 for y in self.main_signal.Y_Coordinates) / len(self.main_signal.Y_Coordinates)
         noise_power = signal_power / (10**(SNR_value / 10))
@@ -37,20 +35,23 @@ class ApplicationManager:
         self.load_graph_2.clear()
         self.load_graph_2.plot(self.noisy_signal.X_Coordinates, self.noisy_signal.Y_Coordinates, pen = 'r')
 
-
     def add_component(self):
         
         self.component_count += 1
         Temporary_String = f"Component {self.component_count}"
         self.ui_window.Compose_Components_ComboBox.addItem(Temporary_String)
 
-
     def remove_component(self):
 
         self.component_count -= 1
         selected_index = self.ui_window.Compose_Components_ComboBox.currentIndex()
-        self.ui_window.Compose_Components_ComboBox.removeItem(selected_index)
-
+        if selected_index == self.ui_window.Compose_Components_ComboBox.count() - 1:
+            self.ui_window.Compose_Components_ComboBox.removeItem(selected_index)
+        else:
+            self.ui_window.Compose_Components_ComboBox.removeItem(selected_index)
+            for index in range(self.ui_window.Compose_Components_ComboBox.count()):
+                if self.ui_window.Compose_Components_ComboBox.itemText(index)[-1] != index + 1:
+                    self.ui_window.Compose_Components_ComboBox.setItemText(index, f"Component {index+1}")
 
     def compose_signal(self):
 
