@@ -35,7 +35,7 @@ class ApplicationManager:
         noise = [random.gauss(0, noise_std) for _ in range(len(self.main_signal.Y_Coordinates))]
         self.noisy_signal = SignalClass.Signal(self.main_signal.X_Coordinates, [s + n for s, n in zip(self.main_signal.Y_Coordinates, noise)])
         self.load_graph_2.clear()
-        self.load_graph_2.plot(self.noisy_signal.X_Coordinates, self.noisy_signal.Y_Coordinates, pen = 'b')
+        self.load_graph_2.plot(self.noisy_signal.X_Coordinates, self.noisy_signal.Y_Coordinates, pen = 'r')
 
 
     def add_component(self):

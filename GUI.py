@@ -259,7 +259,7 @@ class Ui_MainWindow(object):
         self.Load_Signal_to_Noise_Slider = QtWidgets.QSlider(self.groupBox_2)
         self.Load_Signal_to_Noise_Slider.setMinimum(1)
         self.Load_Signal_to_Noise_Slider.setMaximum(50)
-        self.Load_Signal_to_Noise_Slider.setProperty("value", 0)
+        self.Load_Signal_to_Noise_Slider.setProperty("value", 100)
         self.Load_Signal_to_Noise_Slider.setOrientation(QtCore.Qt.Horizontal)
         self.Load_Signal_to_Noise_Slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.Load_Signal_to_Noise_Slider.setTickInterval(5)
