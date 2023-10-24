@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QFileDialog
 import wfdb, numpy as np, math, random
 import pyqtgraph as pg
-import SignalClass
+import Classes
 class ApplicationManager:
     def __init__(self, ui_window, load_graph_1, load_graph_2, load_graph_3, compose_graph_1, compose_graph_2, compose_graph_3):
         # Graph Numbers Guide   1 -> Original -----  2 -> Reconstructed ----- 3 -> Difference
@@ -15,9 +15,10 @@ class ApplicationManager:
         self.main_signal = None
         self.reconstructed_signal = None
         self.noisy_signal = None
-        self.component_count = 1
+        self.component_count = 0
         self.frequency = None
         self.sampled_points = None
+        self.COMPONENTS = []
 
     def load_signal(self):
         File_Path, _ = QFileDialog.getOpenFileName(None, "Browse Signal", "", "All Files (*)")
@@ -25,7 +26,7 @@ class ApplicationManager:
             Record = wfdb.rdrecord(File_Path[:-4])
             Y_Coordinates = list(Record.p_signal[:1000, 0])
             X_Coordinates = list(np.arange(len(Y_Coordinates)))
-            self.main_signal = SignalClass.Signal(X_Coordinates, Y_Coordinates, 'r')
+            self.main_signal = Classes.Signal(X_Coordinates, Y_Coordinates, 'r')
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen = 'b')
             if self.frequency:
                 self.reconstruct_signal(self.sampled_points, self.frequency, len(self.main_signal.X_Coordinates))
@@ -70,7 +71,7 @@ class ApplicationManager:
         noise_power = signal_power / (10**(SNR_value / 10))
         noise_std = math.sqrt(noise_power)
         noise = [random.gauss(0, noise_std) for _ in range(len(self.main_signal.Y_Coordinates))]
-        self.noisy_signal = SignalClass.Signal(self.main_signal.X_Coordinates, [s + n for s, n in zip(self.main_signal.Y_Coordinates, noise)])
+        self.noisy_signal = Classes.Signal(self.main_signal.X_Coordinates, [s + n for s, n in zip(self.main_signal.Y_Coordinates, noise)])
         self.load_graph_1.clear()
         self.load_graph_1.plot(self.noisy_signal.X_Coordinates, self.noisy_signal.Y_Coordinates, pen = 'b')
         
@@ -80,10 +81,18 @@ class ApplicationManager:
     
 
     def add_component(self):
-        
         self.component_count += 1
+        if self.component_count == 1:
+            new_component = Classes.Component()
+            self.COMPONENTS.append(new_component)
+            return
+
         Temporary_String = f"Component {self.component_count}"
         self.ui_window.Compose_Components_ComboBox.addItem(Temporary_String)
+
+        new_component = Classes.Component()
+        self.COMPONENTS.append(new_component)
+
 
     def remove_component(self):
 
@@ -97,13 +106,40 @@ class ApplicationManager:
                 if self.ui_window.Compose_Components_ComboBox.itemText(index)[-1] != index + 1:
                     self.ui_window.Compose_Components_ComboBox.setItemText(index, f"Component {index+1}")
 
-    def compose_signal(self):
 
-        magnitude_1 = self.ui_window.Compose_Signal_Magnitude_Slider.value()
-        frequency_1 = self.ui_window.Compose_Signal_Frequency_Slider.value()
+    def update_sliders(self):
+        selected_index = self.ui_window.Compose_Components_ComboBox.currentIndex()
+        selected_component = self.COMPONENTS[selected_index]
+
+        self.ui_window.Compose_Signal_Magnitude_Slider.setValue(selected_component.magnitude)
+        self.ui_window.Compose_Signal_Frequency_Slider.setValue(selected_component.frequency)
+
+
+    def update_magnitude(self):
+        selected_index = self.ui_window.Compose_Components_ComboBox.currentIndex()
+        selected_component = self.COMPONENTS[selected_index]
+
+        selected_component.magnitude = self.ui_window.Compose_Signal_Magnitude_Slider.value()
+        self.compose_signal()
+
+
+    def update_frequency(self):
+        selected_index = self.ui_window.Compose_Components_ComboBox.currentIndex()
+        selected_component = self.COMPONENTS[selected_index]
+
+        selected_component.frequency = self.ui_window.Compose_Signal_Frequency_Slider.value()
+        self.compose_signal()
+
+
+    def compose_signal(self):
+        
+        #magnitude_1 = self.ui_window.Compose_Signal_Magnitude_Slider.value()
+        #frequency_1 = self.ui_window.Compose_Signal_Frequency_Slider.value()
 
         t = np.linspace(0, 1, 500)
-        signal = magnitude_1 * np.sin(2 * np.pi * frequency_1 * t)
+        signal = 0
+        for component in self.COMPONENTS:
+            signal += component.magnitude * np.sin(2 * np.pi * component.frequency * t)
 
         self.compose_graph_1.clear()
         self.compose_graph_1.plot(t, signal, pen='g')
