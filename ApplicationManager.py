@@ -14,11 +14,12 @@ class ApplicationManager:
         self.compose_graph_3 = compose_graph_3
         self.main_signal = None
         self.reconstructed_signal = None
-        self.component_count = 1
+        self.component_count = 0
         self.frequency = None
         self.sampled_points = None
         self.loaded_signals = []
         self.current_loaded_signal = None
+        self.COMPONENTS = []
 
 
     def get_current_loaded_signal_slot(self, index):
@@ -34,7 +35,7 @@ class ApplicationManager:
             Record = wfdb.rdrecord(File_Path[:-4])
             Y_Coordinates = list(Record.p_signal[:1000, 0])
             X_Coordinates = list(np.arange(len(Y_Coordinates)))
-            self.loaded_signals.append(SignalClass.Signal(X_Coordinates, Y_Coordinates))
+            self.loaded_signals.append(Classes.Signal(X_Coordinates, Y_Coordinates))
             self.current_loaded_signal = self.loaded_signals[-1]
             if len(self.loaded_signals) > 1:
                 Temporary_String = f"Signal {len(self.loaded_signals)}"
