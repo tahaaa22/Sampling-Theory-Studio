@@ -12,7 +12,6 @@ class ApplicationManager:
         self.compose_graph_1 = compose_graph_1
         self.compose_graph_2 = compose_graph_2
         self.compose_graph_3 = compose_graph_3
-        self.main_signal = None
         self.reconstructed_signal = None
         self.component_count = 0
         self.frequency = None
@@ -44,18 +43,18 @@ class ApplicationManager:
             self.load_graph_1.clear()
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen = 'b')
             if self.frequency:
-                self.reconstruct_signal(self.sampled_points, self.frequency, len(self.main_signal.X_Coordinates))
+                self.reconstruct_signal(self.sampled_points, self.frequency, len(self.current_loaded_signal.X_Coordinates))
                 
 
     # Step 1: Sample the signal
     def plot_samples(self, sampling_frequency):
         self.frequency = sampling_frequency
         sampling_period = 1 / sampling_frequency #float result, not expected nor needed
-        self.sampled_points = self.main_signal.X_Coordinates[::sampling_period] # i need to skip in the slicing tech using integer
+        self.sampled_points = self.current_loaded_signal.X_Coordinates[::sampling_period] # I need to skip in the slicing tech using integer
         # Create a scatter plot item
         scatter_plot = pg.ScatterPlotItem()
         # Set the x and y coordinates of the scatter plot
-        x_coordinates = np.arange(0, len(self.main_signal.X_Coordinates), int(1 / sampling_frequency))
+        x_coordinates = np.arange(0, len(self.current_loaded_signal.X_Coordinates), int(1 / sampling_frequency))
         y_coordinates = self.sampled_points
         scatter_plot.setData(x_coordinates, y_coordinates)
         # Set the color of the scatter plot markers
