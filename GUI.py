@@ -276,7 +276,7 @@ class Ui_MainWindow(object):
         self.Load_Signal_to_Noise_LCD.setFont(font)
         self.Load_Signal_to_Noise_LCD.setStyleSheet("border:none;")
         self.Load_Signal_to_Noise_LCD.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.Load_Signal_to_Noise_LCD.setProperty("intValue", 0)
+        self.Load_Signal_to_Noise_LCD.setProperty("intValue", 50)
         self.Load_Signal_to_Noise_LCD.setObjectName("Load_Signal_to_Noise_LCD")
         self.horizontalLayout_5.addWidget(self.Load_Signal_to_Noise_LCD)
         self.verticalLayout_2.addLayout(self.horizontalLayout_5)
@@ -704,7 +704,7 @@ class Ui_MainWindow(object):
         self.Compose_Hertz_CheckBox.clicked.connect(self.Compose_x2Fmax_CheckBox.toggle) # type: ignore
         self.Compose_x2Fmax_CheckBox.clicked.connect(self.Compose_Hertz_CheckBox.toggle) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
+        self.Load_Signals_ComboBox.currentIndexChanged.connect(lambda:MAESTRO.get_current_loaded_signal_slot(self.Load_Signals_ComboBox.currentIndex()))
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Sampling Studio"))
@@ -721,7 +721,7 @@ class Ui_MainWindow(object):
         self.label_16.setText(_translate("MainWindow", "Sampling Frequency"))
         self.Load_Hertz_CheckBox.setText(_translate("MainWindow", "Hertz"))
         self.Load_x2Fmax_CheckBox.setText(_translate("MainWindow", "x2 F max"))
-        self.label_17.setText(_translate("MainWindow", "Signal To Noise Level"))
+        self.label_17.setText(_translate("MainWindow", "Signal To Noise Level (dB)"))
         self.label_20.setText(_translate("MainWindow", "Difference Between Reconstructed and Original"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Load), _translate("MainWindow", "Load"))
         self.label_7.setText(_translate("MainWindow", "Composed Signal"))
@@ -733,7 +733,7 @@ class Ui_MainWindow(object):
         self.label_10.setText(_translate("MainWindow", "Sampling Frequency"))
         self.Compose_Hertz_CheckBox.setText(_translate("MainWindow", "Hertz"))
         self.Compose_x2Fmax_CheckBox.setText(_translate("MainWindow", "x2 F max"))
-        self.label_11.setText(_translate("MainWindow", "Signal To Noise Level"))
+        self.label_11.setText(_translate("MainWindow", "Signal To Noise Level (dB)"))
         self.label_12.setText(_translate("MainWindow", "Composed Signal Frequency"))
         self.label_13.setText(_translate("MainWindow", "Composed Signal Magnitude"))
         self.label_9.setText(_translate("MainWindow", "Difference Between Reconstructed and Composed"))

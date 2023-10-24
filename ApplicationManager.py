@@ -12,12 +12,19 @@ class ApplicationManager:
         self.compose_graph_1 = compose_graph_1
         self.compose_graph_2 = compose_graph_2
         self.compose_graph_3 = compose_graph_3
-        self.main_signal = None
         self.reconstructed_signal = None
-        self.noisy_signal = None
         self.component_count = 1
         self.frequency = None
         self.sampled_points = None
+        self.loaded_signals = []
+        self.current_loaded_signal = None
+
+
+    def get_current_loaded_signal_slot(self, index):
+        self.current_loaded_signal = self.loaded_signals[index]
+        self.load_graph_1.clear()
+        self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.Y_Coordinates, pen = 'b')
+
 
     def load_signal(self):
         File_Path, _ = QFileDialog.getOpenFileName(None, "Browse Signal", "", "All Files (*)")
@@ -25,17 +32,23 @@ class ApplicationManager:
             Record = wfdb.rdrecord(File_Path[:-4])
             Y_Coordinates = list(Record.p_signal[:1000, 0])
             X_Coordinates = list(np.arange(len(Y_Coordinates)))
-            self.main_signal = SignalClass.Signal(X_Coordinates, Y_Coordinates, 'r')
+            self.loaded_signals.append(SignalClass.Signal(X_Coordinates, Y_Coordinates))
+            self.current_loaded_signal = self.loaded_signals[-1]
+            if len(self.loaded_signals) > 1:
+                Temporary_String = f"Signal {len(self.loaded_signals)}"
+                self.ui_window.Load_Signals_ComboBox.addItem(Temporary_String)
+                self.ui_window.Load_Signals_ComboBox.setCurrentIndex(len(self.loaded_signals) - 1)
+            self.load_graph_1.clear()
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen = 'b')
             if self.frequency:
-                self.reconstruct_signal(self.sampled_points, self.frequency, len(self.main_signal.X_Coordinates))
+                self.reconstruct_signal(self.sampled_points, self.frequency, len(self.loaded_signals[self.loaded_signal_count].X_Coordinates))
                 
 
     # Step 1: Sample the signal
     def plot_samples(self, sampling_frequency):
         self.frequency = sampling_frequency
         sampling_period = 1 / sampling_frequency #float result, not expected nor needed
-        self.sampled_points = self.main_signal.X_Coordinates[::sampling_period] # i need to skip in the slicing tech using integer
+        self.sampled_points = self.main_signal.X_Coordinates[::sampling_period] # I need to skip in the slicing tech using integer
         # Create a scatter plot item
         scatter_plot = pg.ScatterPlotItem()
         # Set the x and y coordinates of the scatter plot
@@ -66,16 +79,14 @@ class ApplicationManager:
 
 
     def add_noise(self, SNR_value):
-        signal_power = sum(y ** 2 for y in self.main_signal.Y_Coordinates) / len(self.main_signal.Y_Coordinates)
+        signal_power = sum(y ** 2 for y in self.current_loaded_signal.Y_Coordinates) / len(self.current_loaded_signal.Y_Coordinates)
         noise_power = signal_power / (10**(SNR_value / 10))
         noise_std = math.sqrt(noise_power)
-        noise = [random.gauss(0, noise_std) for _ in range(len(self.main_signal.Y_Coordinates))]
-        self.noisy_signal = SignalClass.Signal(self.main_signal.X_Coordinates, [s + n for s, n in zip(self.main_signal.Y_Coordinates, noise)])
+        noise = [random.gauss(0, noise_std) for _ in range(len(self.current_loaded_signal.Y_Coordinates))]
+        self.current_loaded_signal.noisy_Y_Coordinates = [s + n for s, n in zip(self.current_loaded_signal.Y_Coordinates, noise)]
         self.load_graph_1.clear()
-        self.load_graph_1.plot(self.noisy_signal.X_Coordinates, self.noisy_signal.Y_Coordinates, pen = 'b')
-        
-    
-    
+        self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates, pen = 'r')
+
     
     
 
@@ -107,3 +118,4 @@ class ApplicationManager:
 
         self.compose_graph_1.clear()
         self.compose_graph_1.plot(t, signal, pen='g')
+
