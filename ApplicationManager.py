@@ -19,6 +19,7 @@ class ApplicationManager:
         self.loaded_signals = []
         self.current_loaded_signal = None
         self.COMPONENTS = []
+        self.Composed_Signal = None
 
 
     def get_current_loaded_signal_slot(self, index):
@@ -80,14 +81,23 @@ class ApplicationManager:
         #difference = signal_data - reconstructed_signal
 
 
-    def add_noise(self, SNR_value):
+    def add_noise(self, SNR_value, compose=False):
+        if compose:
+            signal_power = sum(y ** 2 for y in self.Composed_Signal.Y_Coordinates) / len(self.Composed_Signal.Y_Coordinates)
+            noise_power = signal_power / (10 ** (SNR_value / 10))
+            noise_std = math.sqrt(noise_power)
+            noise = [random.gauss(0, noise_std) for _ in range(len(self.Composed_Signal.Y_Coordinates))]
+            self.Composed_Signal.noisy_Y_Coordinates = [s + n for s, n in zip(self.Composed_Signal.Y_Coordinates, noise)]
+            self.compose_graph_1.clear()
+            self.compose_graph_1.plot(self.Composed_Signal.X_Coordinates,self.Composed_Signal.noisy_Y_Coordinates, pen='g')
+            return
         signal_power = sum(y ** 2 for y in self.current_loaded_signal.Y_Coordinates) / len(self.current_loaded_signal.Y_Coordinates)
         noise_power = signal_power / (10**(SNR_value / 10))
         noise_std = math.sqrt(noise_power)
         noise = [random.gauss(0, noise_std) for _ in range(len(self.current_loaded_signal.Y_Coordinates))]
         self.current_loaded_signal.noisy_Y_Coordinates = [s + n for s, n in zip(self.current_loaded_signal.Y_Coordinates, noise)]
         self.load_graph_1.clear()
-        self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates, pen = 'r')
+        self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates, pen = 'b')
 
     
 
