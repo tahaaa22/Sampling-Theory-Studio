@@ -95,7 +95,8 @@ class ApplicationManager:
 
 
     def remove_component(self):
-
+        if self.component_count == 1:
+            return
         self.component_count -= 1
         selected_index = self.ui_window.Compose_Components_ComboBox.currentIndex()
         self.COMPONENTS.pop(selected_index)

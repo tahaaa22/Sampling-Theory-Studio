@@ -616,7 +616,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_14.setObjectName("horizontalLayout_14")
         self.Compose_Signal_Magnitude_Slider = QtWidgets.QSlider(self.groupBox)
         self.Compose_Signal_Magnitude_Slider.setMinimum(0)
-        self.Compose_Signal_Magnitude_Slider.setMaximum(20)
+        self.Compose_Signal_Magnitude_Slider.setMaximum(10)
         self.Compose_Signal_Magnitude_Slider.setProperty("value", 0)
         self.Compose_Signal_Magnitude_Slider.setOrientation(QtCore.Qt.Horizontal)
         self.Compose_Signal_Magnitude_Slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
