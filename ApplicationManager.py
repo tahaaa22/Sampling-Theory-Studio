@@ -132,14 +132,13 @@ class ApplicationManager:
 
 
     def compose_signal(self):
-        
-        #magnitude_1 = self.ui_window.Compose_Signal_Magnitude_Slider.value()
-        #frequency_1 = self.ui_window.Compose_Signal_Frequency_Slider.value()
 
-        t = np.linspace(0, 1, 500)
-        signal = 0
+        signal_X = np.linspace(0, 1, 500)
+        signal_Y = 0
         for component in self.COMPONENTS:
-            signal += component.magnitude * np.sin(2 * np.pi * component.frequency * t)
+            signal_Y += component.magnitude * np.sin(2 * np.pi * component.frequency * signal_X)
 
         self.compose_graph_1.clear()
-        self.compose_graph_1.plot(t, signal, pen='g')
+        self.compose_graph_1.plot(signal_X, signal_Y, pen='g')
+
+        self.Composed_Signal = Classes.Signal(signal_X, signal_Y)
