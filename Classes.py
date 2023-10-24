@@ -5,4 +5,7 @@ class Signal:
         self.noisy_Y_Coordinates = None
 
 
-
+class Component:
+    def __init__(self):
+        self.frequency = 0
+        self.magnitude = 0
