@@ -98,6 +98,8 @@ class ApplicationManager:
 
         self.component_count -= 1
         selected_index = self.ui_window.Compose_Components_ComboBox.currentIndex()
+        self.COMPONENTS.pop(selected_index)
+
         if selected_index == self.ui_window.Compose_Components_ComboBox.count() - 1:
             self.ui_window.Compose_Components_ComboBox.removeItem(selected_index)
         else:
@@ -105,6 +107,8 @@ class ApplicationManager:
             for index in range(self.ui_window.Compose_Components_ComboBox.count()):
                 if self.ui_window.Compose_Components_ComboBox.itemText(index)[-1] != index + 1:
                     self.ui_window.Compose_Components_ComboBox.setItemText(index, f"Component {index+1}")
+
+        self.update_signal()
 
 
     def update_sliders(self):
@@ -120,7 +124,7 @@ class ApplicationManager:
         selected_component = self.COMPONENTS[selected_index]
 
         selected_component.magnitude = self.ui_window.Compose_Signal_Magnitude_Slider.value()
-        self.compose_signal()
+        self.update_signal()
 
 
     def update_frequency(self):
@@ -128,10 +132,10 @@ class ApplicationManager:
         selected_component = self.COMPONENTS[selected_index]
 
         selected_component.frequency = self.ui_window.Compose_Signal_Frequency_Slider.value()
-        self.compose_signal()
+        self.update_signal()
 
 
-    def compose_signal(self):
+    def update_signal(self):
 
         signal_X = np.linspace(0, 1, 500)
         signal_Y = 0
