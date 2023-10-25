@@ -18,6 +18,7 @@ class ApplicationManager:
         self.component_count = 1
         self.frequency = None
         self.sampled_points = None
+        self.sampling_period = None
 
     def load_signal(self):
         File_Path, _ = QFileDialog.getOpenFileName(None, "Browse Signal", "", "All Files (*)")
@@ -27,42 +28,96 @@ class ApplicationManager:
             X_Coordinates = list(np.arange(len(Y_Coordinates)))
             self.main_signal = SignalClass.Signal(X_Coordinates, Y_Coordinates, 'r')
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen = 'b')
-            if self.frequency:
-                self.reconstruct_signal(self.sampled_points, self.frequency, len(self.main_signal.X_Coordinates))
+            
+            
+    def plot_sine_wave(self):
+        # Define the parameters of the sine wave
+        frequency = 100  # Frequency in Hz
+        duration = 1  # Duration in seconds
+        sampling_rate = 1000  # Sampling rate in Hz (number of samples per second)
+
+        # Generate the time values for one period of the sine wave
+        t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
+
+        # Generate the sine wave
+        sine_wave = np.sin(2 * np.pi * frequency * t)
+
+        # Plot the sine wave on load_graph_1
+        self.load_graph_1.plot(t, sine_wave, pen='b')
+
+        # Set the sine wave as the main signal
+        self.main_signal = SignalClass.Signal(t.tolist(), sine_wave.tolist())
                 
+    def whittaker_shannon_interpolation(self, t, samples, T):
+        # Calculate the sum of the product of the samples and the sinc function
+        return sum(sample * np.sinc((t - k * T) / T) for k, sample in enumerate(samples))            
+                
+    def plot_samples(self, frequency):
+        self.plot_sine_wave()
+        freq = 100
+        # Sample the signal at the given frequency
+        self.sampled_points = self.main_signal.Y_Coordinates[::freq]
+        self.sampling_period = 1 / freq
 
-    # Step 1: Sample the signal
-    def plot_samples(self, sampling_frequency):
-        self.frequency = sampling_frequency
-        sampling_period = 1 / sampling_frequency #float result, not expected nor needed
-        self.sampled_points = self.main_signal.X_Coordinates[::sampling_period] # i need to skip in the slicing tech using integer
-        # Create a scatter plot item
-        scatter_plot = pg.ScatterPlotItem()
-        # Set the x and y coordinates of the scatter plot
-        x_coordinates = np.arange(0, len(self.main_signal.X_Coordinates), int(1 / sampling_frequency))
-        y_coordinates = self.sampled_points
-        scatter_plot.setData(x_coordinates, y_coordinates)
-        # Set the color of the scatter plot markers
-        scatter_plot.setPen(pg.mkPen(color='r'))
-        # Add the scatter plot item to the plot
-        self.load_graph_1.plot.addItem(scatter_plot)
+        # Plot the sampled points on load_graph_1
+        self.load_graph_1.plot(self.main_signal.X_Coordinates[::freq], self.sampled_points, pen=None, symbol='o')
 
-    # Step 2: Reconstruct the signal using Whittaker-Shannon interpolation formula
-    def reconstruct_signal(sampled_points, sampling_frequency, original_length):
-        time = np.arange(0, original_length)
-        reconstructed_signal = np.zeros(original_length)
-        for i in range(len(sampled_points)):
-            reconstructed_signal += sampled_points[i] * np.sinc(time - i / sampling_frequency)
-        return reconstructed_signal
+        # Reconstruct the signal and plot the difference
+        self.reconstruct_signal()
+        self.plot_difference()
 
-    def Reconstruction_signal(self):
-        pass
-        #reconstructed_signal = reconstruct_signal(sampled_points, sampling_frequency, len(signal_data))
+    def reconstruct_signal(self):
+        # Use the Whittaker-Shannon interpolation formula to reconstruct the signal
+        self.reconstructed_signal = [self.whittaker_shannon_interpolation(t, self.sampled_points, self.sampling_period) for t in self.main_signal.X_Coordinates]
 
-    def difference(self):
-        pass
-        # Step 3: Calculate the difference between the original and reconstructed signal
-        #difference = signal_data - reconstructed_signal
+        # Plot the reconstructed signal on load_graph_2
+        self.load_graph_2.plot(self.main_signal.X_Coordinates, self.reconstructed_signal, pen='r')
+
+    def plot_difference(self):
+        # Calculate the difference between the original and reconstructed signals
+        difference = np.array(self.main_signal.Y_Coordinates) - np.array(self.reconstructed_signal)
+        # Plot the difference on load_graph_3
+        self.load_graph_3.plot(self.main_signal.X_Coordinates, difference.tolist(), pen='g')
+        
+        
+    # # Step 1: Sample the signal
+    # def plot_samples(self, sampling_frequency):
+    #     self.frequency = sampling_frequency
+        
+    #     #self.sampling_period = 1 / sampling_frequency #float result, not expected nor needed
+    #     self.sampled_points = self.main_signal.X_Coordinates[::2] # i need to skip in the slicing tech using integer
+    #     # Create a scatter plot item
+    #     scatter_plot = pg.ScatterPlotItem()
+    #     # Set the x and y coordinates of the scatter plot
+    #     x_coordinates = np.arange(0, len(self.main_signal.X_Coordinates), 2)
+    #     y_coordinates = self.sampled_points
+    #     #scatter_plot.setData(x_coordinates, y_coordinates)
+    #     #self.load_graph_2.plot(x_coordinates, y_coordinates, pen = 'r')
+    #     # Set the color of the scatter plot markers
+    #     #scatter_plot.setPen(pg.mkPen(color='r'))
+    #     # Add the scatter plot item to the plot
+    #     #self.load_graph_2.addItem(scatter_plot)
+    #     self.load_graph_2.plot(x_coordinates, y_coordinates, pen = 'r')
+
+    # # Step 2: Reconstruct the signal using Whittaker-Shannon interpolation formula
+    # def Reconstruction_signal(self):
+    #     # Step 2: Reconstruct the signal using Whittaker-Shannon interpolation formula
+    #     time = np.arange(0, len(self.main_signal.X_Coordinates))
+    #     reconstructed_signal = np.zeros(len(self.main_signal.X_Coordinates))
+    #     for i in range(len(self.sampled_points)):
+    #         reconstructed_signal += self.sampled_points[i] * np.sinc(time - i / self.frequency)
+    
+    #     # Plot the reconstructed signal
+    #     #self.load_graph_2.clear()
+    #     self.load_graph_2.plot(time, reconstructed_signal, pen='g')
+        
+    # def difference(self):
+    #     # Step 3: Calculate the difference between the original and reconstructed signal
+    #     difference = self.main_signal.Y_Coordinates - self.reconstructed_signal
+    
+    #     # Plot the difference
+    #     #self.load_graph_3.clear()
+    #     self.load_graph_3.plot(self.main_signal.X_Coordinates, difference, pen='b')
 
 
     def add_noise(self, SNR_value):
@@ -74,10 +129,6 @@ class ApplicationManager:
         self.load_graph_1.clear()
         self.load_graph_1.plot(self.noisy_signal.X_Coordinates, self.noisy_signal.Y_Coordinates, pen = 'b')
         
-    
-    
-    
-    
 
     def add_component(self):
         
