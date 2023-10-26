@@ -22,7 +22,20 @@ class ApplicationManager:
         self.COMPONENTS = []
         self.Composed_Signal = None
 
+    @staticmethod
+    def sinc(x):
+        if abs(x) >= np.sqrt(np.sqrt(np.finfo(float).eps)):
+            return np.sin(np.pi * x) / (np.pi * x)
+        else:
+            return 1 - x**2/6 + x**4/120
 
+    def resample(self, ts, signal):
+        def signal_func(t):
+            return sum([s * self.sinc((t - n*ts)/ts) for n, s in enumerate(signal)])
+        return signal_func
+    
+    
+    
     def get_current_loaded_signal_slot(self, index):
         self.current_loaded_signal = self.loaded_signals[index]
         self.load_graph_1.clear()
@@ -44,77 +57,98 @@ class ApplicationManager:
                 self.ui_window.Load_Signals_ComboBox.setCurrentIndex(len(self.loaded_signals) - 1)
             self.load_graph_1.clear()
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen = 'b')
+            #self.plot_sine_wave()
             
-            
+    def get_sampling_frequency(self):
+        if self.ui_window.Load_x2Fmax_CheckBox.isChecked():
+            # Calculate the maximum frequency of the loaded signal
+            max_freq = max(np.abs(np.fft.rfft(self.current_loaded_signal.Y_Coordinates)))
+            return 2 * max_freq 
+        elif self.ui_window.Load_Hertz_CheckBox.isChecked():
+            # Read the value of the Load_Sampling_Frequency_Slider
+            return self.ui_window.Load_Sampling_Frequency_Slider.value()
+        else:
+            return None 
+           
     def plot_sine_wave(self):
-        # Define the parameters of the sine wave
-        frequency = 100  # Frequency in Hz
-        duration = 1  # Duration in seconds
-        sampling_rate = 1000  # Sampling rate in Hz (number of samples per second)
+        
+        magnitude_1 = 5
+        frequency_1 = 2
 
-        # Generate the time values for one period of the sine wave
-        t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
+        t = np.linspace(0, 1, 500)
+        signal = magnitude_1 * np.sin(2 * np.pi * frequency_1 * t)
 
-        # Generate the sine wave
-        sine_wave = np.sin(2 * np.pi * frequency * t)
+        # Resample the signal
+        resampled_signal = self.resample(1/frequency_1, signal)
 
-        # Plot the sine wave on load_graph_1
-        self.load_graph_1.plot(t, sine_wave, pen='b')
+        x = np.arange(0, 1, 0.002)
+        y1 = signal
+        y2 = [resampled_signal(i) for i in x]
 
-        # Set the sine wave as the main signal
-        self.main_signal = SignalClass.Signal(t.tolist(), sine_wave.tolist())
+        self.load_graph_1.clear()
+        self.load_graph_1.plot(x, y1, pen='g')
+        self.load_graph_2.plot(x, y2, pen='b')
+
+        # # Define the parameters of the sine wave
+        # frequency = 5  # Frequency in Hz
+        # duration = 1  # Duration in seconds
+        # sampling_rate = 100  # Sampling rate in Hz (number of samples per second)
+
+        # # Generate the time values for one period of the sine wave
+        # t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
+
+        # # Generate the sine wave
+        # sine_wave = np.sin(2 * np.pi * frequency * t)
+        # self.sampled_points = sine_wave[::sampling_rate]
+
+        # # Plot the sine wave on load_graph_1
+        # self.load_graph_1.plot(t, sine_wave, pen='b')
+
+        # # Set the sine wave as the main signal
+        # self.current_loaded_signal = Classes.Signal(t.tolist(), sine_wave.tolist())
+        #  # Reconstruct the signal and plot the difference
+        # self.reconstruct_signal()
+        # self.plot_difference()
+
                 
-    def whittaker_shannon_interpolation(self, t, samples, T):
-        # Calculate the sum of the product of the samples and the sinc function
-        return sum(sample * np.sinc((t - k * T) / T) for k, sample in enumerate(samples))            
                 
-    def plot_samples(self, frequency):
-        self.plot_sine_wave()
-        freq = 100
+    def plot_samples(self):
+        freq = self.get_sampling_frequency()
+        if freq is None:
+            return
+        # Convert frequency to integer for slicing
+        freq = int(freq)
+        #TODO fix the slicing var it can not be using freq, but instead it have to be proven form freq.
         # Sample the signal at the given frequency
-        self.sampled_points = self.main_signal.Y_Coordinates[::freq]
+        self.sampled_points = self.current_loaded_signal.Y_Coordinates[::freq]
         self.sampling_period = 1 / freq
-
+        self.load_graph_1.clear()
         # Plot the sampled points on load_graph_1
-        self.load_graph_1.plot(self.main_signal.X_Coordinates[::freq], self.sampled_points, pen=None, symbol='o')
-         # Reconstruct the signal and plot the difference
+        self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates[::freq], self.sampled_points, pen=None, symbol='o')
+        # Reconstruct the signal and plot the difference
         self.reconstruct_signal()
         self.plot_difference()
 
-    # Step 1: Sample the signal
-    def plot_samples(self, sampling_frequency):
-        self.frequency = sampling_frequency
-        sampling_period = 1 / sampling_frequency #float result, not expected nor needed
-        self.sampled_points = self.current_loaded_signal.X_Coordinates[::sampling_period] # I need to skip in the slicing tech using integer
-        # Create a scatter plot item
-        scatter_plot = pg.ScatterPlotItem()
-        # Set the x and y coordinates of the scatter plot
-        x_coordinates = np.arange(0, len(self.current_loaded_signal.X_Coordinates), int(1 / sampling_frequency))
-        y_coordinates = self.sampled_points
-        scatter_plot.setData(x_coordinates, y_coordinates)
-        # Set the color of the scatter plot markers
-        scatter_plot.setPen(pg.mkPen(color='r'))
-        # Add the scatter plot item to the plot
-        self.load_graph_1.plot.addItem(scatter_plot)
-
+    def whittaker_shannon_interpolation(self, time , samples, period):
+        # Calculate the sum of the product of the samples and the sinc function
+        return sum(sample * np.sinc((time - index * period) / period) for index, sample in enumerate(samples))            
+    
+    
     # Step 2: Reconstruct the signal using Whittaker-Shannon interpolation formula
-    def reconstruct_signal(sampled_points, sampling_frequency, original_length):
-        time = np.arange(0, original_length)
-        reconstructed_signal = np.zeros(original_length)
-        for i in range(len(sampled_points)):
-            reconstructed_signal += sampled_points[i] * np.sinc(time - i / sampling_frequency)
-        return reconstructed_signal
-
-    def Reconstruction_signal(self):
-        pass
-        #reconstructed_signal = reconstruct_signal(sampled_points, sampling_frequency, len(signal_data))
-
-    def difference(self):
-        pass
-        # Step 3: Calculate the difference between the original and reconstructed signal
-        #difference = signal_data - reconstructed_signal
-
-
+    def reconstruct_signal(self):
+        # Use the Whittaker-Shannon interpolation formula to reconstruct the signal
+        self.reconstructed_signal = [self.whittaker_shannon_interpolation(time, self.sampled_points, self.sampling_period) for time in self.current_loaded_signal.X_Coordinates]
+        # Plot the reconstructed signal on load_graph_2
+        self.load_graph_2.clear()
+        self.load_graph_2.plot(self.current_loaded_signal.X_Coordinates, self.reconstructed_signal, pen='r')
+        
+    def plot_difference(self):
+        # Calculate the difference between the original and reconstructed signals
+        difference = np.array(self.current_loaded_signal.Y_Coordinates) - np.array(self.reconstructed_signal)
+        # Plot the difference on load_graph_3\
+        self.load_graph_3.clear()
+        self.load_graph_3.plot(self.current_loaded_signal.X_Coordinates, difference.tolist(), pen='g')
+        
     def add_noise(self, SNR_value, compose=False):
         if compose:
             signal_power = sum(y ** 2 for y in self.Composed_Signal.Y_Coordinates) / len(self.Composed_Signal.Y_Coordinates)
