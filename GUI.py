@@ -515,15 +515,15 @@ class Ui_MainWindow(object):
         self.verticalLayout.addItem(spacerItem10)
         self.horizontalLayout_12 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_12.setObjectName("horizontalLayout_12")
-        self.Compose_Sampling_Frequency_Slid = QtWidgets.QSlider(self.groupBox)
-        self.Compose_Sampling_Frequency_Slid.setMinimum(1)
-        self.Compose_Sampling_Frequency_Slid.setMaximum(100)
-        self.Compose_Sampling_Frequency_Slid.setProperty("value", 1)
-        self.Compose_Sampling_Frequency_Slid.setOrientation(QtCore.Qt.Horizontal)
-        self.Compose_Sampling_Frequency_Slid.setTickPosition(QtWidgets.QSlider.TicksBelow)
-        self.Compose_Sampling_Frequency_Slid.setTickInterval(5)
-        self.Compose_Sampling_Frequency_Slid.setObjectName("Compose_Sampling_Frequency_Slid")
-        self.horizontalLayout_12.addWidget(self.Compose_Sampling_Frequency_Slid)
+        self.Compose_Sampling_Frequency_Slider = QtWidgets.QSlider(self.groupBox)
+        self.Compose_Sampling_Frequency_Slider.setMinimum(1)
+        self.Compose_Sampling_Frequency_Slider.setMaximum(100)
+        self.Compose_Sampling_Frequency_Slider.setProperty("value", 1)
+        self.Compose_Sampling_Frequency_Slider.setOrientation(QtCore.Qt.Horizontal)
+        self.Compose_Sampling_Frequency_Slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        self.Compose_Sampling_Frequency_Slider.setTickInterval(5)
+        self.Compose_Sampling_Frequency_Slider.setObjectName("Compose_Sampling_Frequency_Slider")
+        self.horizontalLayout_12.addWidget(self.Compose_Sampling_Frequency_Slider)
         self.Compose_Sampling_Frequency_LCD = QtWidgets.QLCDNumber(self.groupBox)
         font = QtGui.QFont()
         font.setBold(True)
@@ -699,7 +699,7 @@ class Ui_MainWindow(object):
         self.Compose_Signal_Magnitude_Slider.valueChanged['int'].connect(self.Compose_Signal_Magnitude_LCD.display) # type: ignore
         self.Compose_Signal_to_Noise_Slider.valueChanged['int'].connect(self.Load_Signal_to_Noise_LCD_2.display) # type: ignore
         self.Load_Signal_to_Noise_Slider.valueChanged['int'].connect(self.Load_Signal_to_Noise_LCD.display) # type: ignore
-        self.Compose_Sampling_Frequency_Slid.valueChanged['int'].connect(self.Compose_Sampling_Frequency_LCD.display) # type: ignore
+        self.Compose_Sampling_Frequency_Slider.valueChanged['int'].connect(self.Compose_Sampling_Frequency_LCD.display) # type: ignore
         self.Load_Sampling_Frequency_Slider.valueChanged['int'].connect(self.Load_Sampling_Frequency_LCD.display) # type: ignore
         self.Load_Hertz_RadioButton.clicked.connect(lambda : MAESTRO.load_update_sampling_slider())
         self.Load_x2Fmax_RadioButton.clicked.connect(lambda : MAESTRO.load_update_sampling_slider())
