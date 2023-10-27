@@ -142,12 +142,6 @@ class ApplicationManager:
         noise = [random.gauss(0, noise_std) for _ in range(len(self.current_loaded_signal.Y_Coordinates))]
         self.current_loaded_signal.noisy_Y_Coordinates = [s + n for s, n in zip(self.current_loaded_signal.Y_Coordinates, noise)]
         self.plot_samples()
-        # Reconstruct the signal and plot the difference
-        self.reconstruct_signal()
-        self.plot_difference()
-
-    
-
 
     def add_component(self):
         self.component_count += 1

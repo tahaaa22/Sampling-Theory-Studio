@@ -556,6 +556,7 @@ class Ui_MainWindow(object):
         self.Compose_Signal_to_Noise_Slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.Compose_Signal_to_Noise_Slider.setTickInterval(5)
         self.Compose_Signal_to_Noise_Slider.setObjectName("Compose_Signal_to_Noise_Slider")
+        self.Compose_Signal_to_Noise_Slider.valueChanged.connect(lambda: MAESTRO.add_noise(self.Compose_Signal_to_Noise_Slider.value(), True))
         self.horizontalLayout_13.addWidget(self.Compose_Signal_to_Noise_Slider)
         self.Load_Signal_to_Noise_LCD_2 = QtWidgets.QLCDNumber(self.groupBox)
         font = QtGui.QFont()
