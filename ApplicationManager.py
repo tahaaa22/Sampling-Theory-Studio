@@ -21,6 +21,7 @@ class ApplicationManager:
         self.current_loaded_signal = None
         self.COMPONENTS = []
         self.Composed_Signal = None
+        self.max_freq = 0
 
     @staticmethod
     def sinc(x):
@@ -58,15 +59,12 @@ class ApplicationManager:
             #self.plot_sine_wave()
             
     def get_sampling_frequency(self):
-        if self.ui_window.Load_x2Fmax_CheckBox.isChecked():
-            # Calculate the maximum frequency of the loaded signal
-            max_freq = max(np.abs(np.fft.rfft(self.current_loaded_signal.Y_Coordinates)))
-            return 2 * max_freq 
-        elif self.ui_window.Load_Hertz_CheckBox.isChecked():
-            # Read the value of the Load_Sampling_Frequency_Slider
-            return self.ui_window.Load_Sampling_Frequency_Slider.value()
-        else:
-            return None 
+        # Calculate the maximum frequency of the loaded signal
+        
+        max_freq = max(np.abs(np.fft.rfft(self.current_loaded_signal.Y_Coordinates)))
+        self.max_freq = max_freq
+        return self.ui_window.Load_Sampling_Frequency_Slider.value() * max_freq
+
            
     def plot_sine_wave(self):
         
@@ -148,6 +146,17 @@ class ApplicationManager:
         self.load_graph_3.clear()
         self.load_graph_3.plot(self.current_loaded_signal.X_Coordinates, difference.tolist(), pen='g')
         
+    def update_max_freq_slider(self):        
+        self.Load_Sampling_Frequency_Slider.setMinimum(0)
+        self.Load_Sampling_Frequency_Slider.setMaximum(4)
+        self.Load_Sampling_Frequency_Slider.setTickInterval(1)
+    
+    def update_hertz_slider(self):        
+        self.Load_Sampling_Frequency_Slider.setMinimum(0)
+        self.Load_Sampling_Frequency_Slider.setMaximum(4 * self.max_freq)
+        self.Load_Sampling_Frequency_Slider.setTickInterval(int(4 * self.max_freq / 5))
+    
+
     def add_noise(self, SNR_value, compose=False):
         if compose:
             signal_power = sum(y ** 2 for y in self.Composed_Signal.Y_Coordinates) / len(self.Composed_Signal.Y_Coordinates)
