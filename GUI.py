@@ -224,7 +224,7 @@ class Ui_MainWindow(object):
         self.Load_Sampling_Frequency_Slider = QtWidgets.QSlider(self.groupBox_2)
         self.Load_Sampling_Frequency_Slider.setMinimum(1)
         self.Load_Sampling_Frequency_Slider.setMaximum(100)
-        self.Load_Sampling_Frequency_Slider.setProperty("value", 1)
+        self.Load_Sampling_Frequency_Slider.setProperty("value", 0)
         self.Load_Sampling_Frequency_Slider.setOrientation(QtCore.Qt.Horizontal)
         self.Load_Sampling_Frequency_Slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.Load_Sampling_Frequency_Slider.setTickInterval(5)
@@ -517,9 +517,9 @@ class Ui_MainWindow(object):
         self.horizontalLayout_12 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_12.setObjectName("horizontalLayout_12")
         self.Compose_Sampling_Frequency_Slid = QtWidgets.QSlider(self.groupBox)
-        self.Compose_Sampling_Frequency_Slid.setMinimum(0)
+        self.Compose_Sampling_Frequency_Slid.setMinimum(1)
         self.Compose_Sampling_Frequency_Slid.setMaximum(100)
-        self.Compose_Sampling_Frequency_Slid.setProperty("value", 0)
+        self.Compose_Sampling_Frequency_Slid.setProperty("value", 1)
         self.Compose_Sampling_Frequency_Slid.setOrientation(QtCore.Qt.Horizontal)
         self.Compose_Sampling_Frequency_Slid.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.Compose_Sampling_Frequency_Slid.setTickInterval(5)
@@ -693,6 +693,7 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
