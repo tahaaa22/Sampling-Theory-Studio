@@ -41,8 +41,6 @@ class ApplicationManager:
         self.load_graph_1.clear()
         self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.Y_Coordinates, pen = 'b')
 
-        self.COMPONENTS = []
-
     def load_signal(self):
         File_Path, _ = QFileDialog.getOpenFileName(None, "Browse Signal", "", "All Files (*)")
         if File_Path:
