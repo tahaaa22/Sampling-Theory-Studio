@@ -22,12 +22,19 @@ class ApplicationManager:
         self.COMPONENTS = []
         self.Composed_Signal = None
         self.sampled_Xpoints = None
+        self.current_tab = "Load"
 
     
     def get_current_loaded_signal_slot(self, index):
         self.current_loaded_signal = self.loaded_signals[index]
         self.load_graph_1.clear()
         self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.Y_Coordinates, pen = 'b')
+
+    def update_current_tab(self):
+        if self.current_tab == "Compose":
+            self.current_tab = "Load"
+        else:
+            self.current_tab = "Compose"
 
     def load_signal(self):
         File_Path, _ = QFileDialog.getOpenFileName(None, "Browse Signal", "", "All Files (*)")
@@ -53,7 +60,6 @@ class ApplicationManager:
                 return self.ui_window.Load_Sampling_Frequency_Slider.value()
         else:
             return None
-
 
     def plot_samples(self):
         freq = self.get_sampling_frequency()
@@ -144,12 +150,6 @@ class ApplicationManager:
         noise = [random.gauss(0, noise_std) for _ in range(len(self.current_loaded_signal.Y_Coordinates))]
         self.current_loaded_signal.noisy_Y_Coordinates = [s + n for s, n in zip(self.current_loaded_signal.Y_Coordinates, noise)]
         self.plot_samples()
-        # Reconstruct the signal and plot the difference
-        self.reconstruct_signal()
-        self.plot_difference()
-
-    
-
 
     def add_component(self):
         self.component_count += 1

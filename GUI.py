@@ -556,6 +556,7 @@ class Ui_MainWindow(object):
         self.Compose_Signal_to_Noise_Slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.Compose_Signal_to_Noise_Slider.setTickInterval(5)
         self.Compose_Signal_to_Noise_Slider.setObjectName("Compose_Signal_to_Noise_Slider")
+        self.Compose_Signal_to_Noise_Slider.valueChanged.connect(lambda: MAESTRO.add_noise(self.Compose_Signal_to_Noise_Slider.value(), True))
         self.horizontalLayout_13.addWidget(self.Compose_Signal_to_Noise_Slider)
         self.Load_Signal_to_Noise_LCD_2 = QtWidgets.QLCDNumber(self.groupBox)
         font = QtGui.QFont()
@@ -708,6 +709,7 @@ class Ui_MainWindow(object):
         self.Load_Sampling_Frequency_Slider.valueChanged.connect(lambda: MAESTRO.plot_samples())
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.Load_Signals_ComboBox.currentIndexChanged.connect(lambda: MAESTRO.get_current_loaded_signal_slot(self.Load_Signals_ComboBox.currentIndex()))
+        self.tabWidget.tabBarClicked.connect(lambda : MAESTRO.update_current_tab())
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
