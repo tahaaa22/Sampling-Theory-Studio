@@ -97,9 +97,9 @@ class ApplicationManager:
         return output_magnitude
 
     def reconstruct_signal(self):
-        self.reconstructed_signal = self.ShannonInterpolation(self.sampled_points, self.sampled_Xpoints, self.sampled_Xpoints)
+        self.reconstructed_signal = self.ShannonInterpolation(self.sampled_points, self.sampled_Xpoints, self.current_loaded_signal.X_Coordinates)
         self.load_graph_2.clear()
-        self.load_graph_2.plot(self.sampled_Xpoints, self.reconstructed_signal, pen='r')
+        self.load_graph_2.plot(self.current_loaded_signal.X_Coordinates, self.reconstructed_signal, pen='r')
         
     def plot_difference(self):
         # Interpolate self.current_loaded_signal.Y_Coordinates to the length of self.reconstructed_signal
@@ -110,7 +110,7 @@ class ApplicationManager:
         difference = [x - y for x, y in zip(self.reconstructed_signal, self.current_loaded_signal.noisy_Y_Coordinates)]
         # Plot the difference on load_graph_3
         self.load_graph_3.clear()
-        self.load_graph_3.plot(self.sampled_Xpoints, difference, pen='g')
+        self.load_graph_3.plot(self.current_loaded_signal.X_Coordinates, difference, pen='g')
             
     def load_update_sampling_slider(self):
         if self.ui_window.Load_Hertz_RadioButton.isChecked():
