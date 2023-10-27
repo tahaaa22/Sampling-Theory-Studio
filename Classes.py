@@ -3,6 +3,7 @@ class Signal:
         self.X_Coordinates = X_List
         self.Y_Coordinates = Y_list
         self.noisy_Y_Coordinates = Y_list
+        self.max_freq = 0
 
 
 class Component:

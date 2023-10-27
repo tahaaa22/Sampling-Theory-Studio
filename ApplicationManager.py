@@ -37,35 +37,18 @@ class ApplicationManager:
             X_Coordinates = list(np.arange(len(Y_Coordinates)))
             self.loaded_signals.append(Classes.Signal(X_Coordinates, Y_Coordinates))
             self.current_loaded_signal = self.loaded_signals[-1]
+            self.current_loaded_signal.max_freq = max(np.abs(np.fft.rfft(self.current_loaded_signal.Y_Coordinates)))
             if len(self.loaded_signals) > 1:
                 Temporary_String = f"Signal {len(self.loaded_signals)}"
                 self.ui_window.Load_Signals_ComboBox.addItem(Temporary_String)
                 self.ui_window.Load_Signals_ComboBox.setCurrentIndex(len(self.loaded_signals) - 1)
             self.load_graph_1.clear()
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen = 'b')
-            #self.plot_sine_wave()
             
     def get_sampling_frequency(self):
-        if self.ui_window.Load_Sampling_Frequency_Slider.value() != None:
-            if self.ui_window.Load_x2Fmax_CheckBox.isChecked():
-                # Calculate the maximum frequency of the loaded signal
-                max_freq = max(np.abs(np.fft.rfft(self.current_loaded_signal.Y_Coordinates)))
-                self.ui_window.Load_Sampling_Frequency_Slider.setMinimum(1)
-                self.ui_window.Load_Sampling_Frequency_Slider.setMaximum(4)
-                self.ui_window.Load_Sampling_Frequency_Slider.setProperty("value", 0)
-                self.ui_window.Load_Sampling_Frequency_Slider.setTickInterval(1)
-                self.ui_window.Load_Sampling_Frequency_LCD.setProperty("intValue", 0)
-                return (self.ui_window.Load_Sampling_Frequency_Slider.value()) * max_freq 
-            elif self.ui_window.Load_Hertz_CheckBox.isChecked():
-                # self.ui_window.Load_Sampling_Frequency_Slider.setMinimum(1)
-                # self.ui_window.Load_Sampling_Frequency_Slider.setMaximum(100)
-                # self.ui_window.Load_Sampling_Frequency_Slider.setProperty("value", 0)
-                # self.ui_window.Load_Sampling_Frequency_Slider.setTickInterval(5)
-                # self.ui_window.Load_Sampling_Frequency_LCD.setProperty("intValue", )
-                #Read the value of the Load_Sampling_Frequency_Slider
-                return self.ui_window.Load_Sampling_Frequency_Slider.value()
-        else:
-            return None 
+        if self.ui_window.Load_Sampling_Frequency_Slider.value():
+            #Read the value of the Load_Sampling_Frequency_Slider
+            return self.ui_window.Load_Sampling_Frequency_Slider.value()
        
                 
     def plot_samples(self):
@@ -118,15 +101,27 @@ class ApplicationManager:
         self.load_graph_3.clear()
         self.load_graph_3.plot(self.sampled_Xpoints, difference.tolist(), pen='g')
             
-    def update_max_freq_slider(self):        
-        self.Load_Sampling_Frequency_Slider.setMinimum(0)
-        self.Load_Sampling_Frequency_Slider.setMaximum(4)
-        self.Load_Sampling_Frequency_Slider.setTickInterval(1)
-    
-    def update_hertz_slider(self):        
-        self.Load_Sampling_Frequency_Slider.setMinimum(0)
-        self.Load_Sampling_Frequency_Slider.setMaximum(4 * self.max_freq)
-        self.Load_Sampling_Frequency_Slider.setTickInterval(int(4 * self.max_freq / 5))
+    def load_update_sampling_slider(self):
+        print("ENTERED")
+        if self.ui_window.Load_Hertz_RadioButton.isChecked():
+            self.ui_window.Load_Sampling_Frequency_Slider.setMinimum(1)
+            self.ui_window.Load_Sampling_Frequency_Slider.setMaximum(4 * int(self.current_loaded_signal.max_freq))
+            self.ui_window.Load_Sampling_Frequency_Slider.setTickInterval(int(4 * self.current_loaded_signal.max_freq / 5))
+        else:
+            self.ui_window.Load_Sampling_Frequency_Slider.setMinimum(1)
+            self.ui_window.Load_Sampling_Frequency_Slider.setMaximum(4)
+            self.ui_window.Load_Sampling_Frequency_Slider.setTickInterval(1)
+
+    def compose_update_sampling_slider(self):
+        if self.ui_window.Compose_Hertz_RadioButton.isChecked():
+            self.ui_window.Compose_Sampling_Frequency_Slider.setMinimum(1)
+            self.ui_window.Compose_Sampling_Frequency_Slider.setMaximum(4 * int(self.current_loaded_signal.max_freq))
+            self.ui_window.Compose_Sampling_Frequency_Slider.setTickInterval(int(4 * self.current_loaded_signal.max_freq / 10))
+        else:
+            self.ui_window.Compose_Sampling_Frequency_Slider.setMinimum(1)
+            self.ui_window.Compose_Sampling_Frequency_Slider.setMaximum(4)
+            self.ui_window.Compose_Sampling_Frequency_Slider.setTickInterval(1)
+
     
 
     def add_noise(self, SNR_value, compose=False):
