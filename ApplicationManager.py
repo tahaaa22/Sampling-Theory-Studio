@@ -142,19 +142,29 @@ class ApplicationManager:
         if self.current_tab == "Load": 
             # Interpolate self.current_loaded_signal.Y_Coordinates to the length of self.reconstructed_signal
             interpolated_Y_Coordinates = np.interp(self.sampled_Xpoints, self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates)
+            #interpolated_Y_Coordinates = np.interp(self.sampled_Xpoints, self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates)
             # Calculate the difference between the original and reconstructed signals
             difference = interpolated_Y_Coordinates - np.array(self.reconstructed_signal)
+            #difference =  self.current_loaded_signal.noisy_Y_Coordinates - np.array(self.reconstructed_signal)
+            # Calculate the difference between the sampled points and the equivalent y-coordinate points
+            difference = [x - y for x, y in zip(self.reconstructed_signal, self.current_loaded_signal.noisy_Y_Coordinates)]
             # Plot the difference on load_graph_3
             self.load_graph_3.clear()
             self.load_graph_3.plot(self.sampled_Xpoints, difference.tolist(), pen='g')
+            self.load_graph_3.plot(self.sampled_Xpoints, difference, pen='g')
         else:
             # Interpolate self.current_loaded_signal.Y_Coordinates to the length of self.reconstructed_signal
             interpolated_Y_Coordinates = np.interp(self.sampled_Xpoints, self.Composed_Signal.X_Coordinates, self.Composed_Signal.noisy_Y_Coordinates)
+            #interpolated_Y_Coordinates = np.interp(self.sampled_Xpoints, self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates)
             # Calculate the difference between the original and reconstructed signals
             difference = interpolated_Y_Coordinates - np.array(self.reconstructed_signal)
+            #difference =  self.current_loaded_signal.noisy_Y_Coordinates - np.array(self.reconstructed_signal)
+            # Calculate the difference between the sampled points and the equivalent y-coordinate points
+            difference = [x - y for x, y in zip(self.reconstructed_signal, self.Composed_Signal.noisy_Y_Coordinates)]
             # Plot the difference on load_graph_3
             self.compose_graph_3.clear()
             self.compose_graph_3.plot(self.sampled_Xpoints, difference.tolist(), pen='g')
+            self.compose_graph_3.plot(self.sampled_Xpoints, difference, pen='g')
 
     def load_update_sampling_slider(self):
         if self.ui_window.Load_Hertz_RadioButton.isChecked():
