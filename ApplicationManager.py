@@ -53,35 +53,67 @@ class ApplicationManager:
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen = 'b')
             
     def get_sampling_frequency(self):
-        if self.ui_window.Load_Sampling_Frequency_Slider.value():
-            if self.ui_window.Load_x2Fmax_RadioButton.isChecked():
-                return self.ui_window.Load_Sampling_Frequency_Slider.value() * self.current_loaded_signal.max_freq
-            elif self.ui_window.Load_Hertz_RadioButton.isChecked():
-                return self.ui_window.Load_Sampling_Frequency_Slider.value()
+        if self.current_tab == "Load":
+            if self.ui_window.Load_Sampling_Frequency_Slider.value():
+                if self.ui_window.Load_x2Fmax_RadioButton.isChecked():
+                    return self.ui_window.Load_Sampling_Frequency_Slider.value() * self.current_loaded_signal.max_freq
+                elif self.ui_window.Load_Hertz_RadioButton.isChecked():
+                    return self.ui_window.Load_Sampling_Frequency_Slider.value()
+            else:
+                return None
         else:
-            return None
+            self.Composed_Signal.max_freq = max(np.abs(np.fft.rfft(self.Composed_Signal.Y_Coordinates)))
+            if self.ui_window.Compose_Sampling_Frequency_Slider.value():
+                if self.ui_window.Compose_x2Fmax_RadioButton.isChecked():
+                    return self.ui_window.Compose_Sampling_Frequency_Slider.value() * self.Composed_Signal.max_freq
+                elif self.ui_window.Compose_Hertz_RadioButton.isChecked():
+                    return self.ui_window.Compose_Sampling_Frequency_Slider.value()
+            else:
+                return None
 
     def plot_samples(self):
-        freq = self.get_sampling_frequency()
-        if freq is None:
-            return
-        self.sampling_period = 1 / freq
-        # Calculate the number of samples per period
-        samples_per_period = int(len(self.current_loaded_signal.X_Coordinates) * self.sampling_period)
-        # Sample the signal at the given frequency
-        self.sampled_points = [self.current_loaded_signal.noisy_Y_Coordinates[i] for i in range(0, len(self.current_loaded_signal.noisy_Y_Coordinates), samples_per_period)]
-        # Generate x-coordinate points based on the length of sampled_points
-        self.sampled_Xpoints = np.linspace(self.current_loaded_signal.X_Coordinates[0], self.current_loaded_signal.X_Coordinates[-1], len(self.sampled_points))
-        # if len(sampled_Xpoints) < 2:
-        #     print("Not enough sampled points for interpolation")
-        #     return
-        self.load_graph_1.clear()
-        # Plot the sampled points on load_graph_1
-        self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates, pen = 'b')
-        self.load_graph_1.plot(self.sampled_Xpoints, self.sampled_points, pen=None, symbol='o')
-        # Reconstruct the signal and plot the difference
-        self.reconstruct_signal()
-        self.plot_difference()
+        if self.current_tab == "Load":
+            freq = self.get_sampling_frequency()
+            if freq is None:
+                return
+            self.sampling_period = 1 / freq
+            # Calculate the number of samples per period
+            samples_per_period = int(len(self.current_loaded_signal.X_Coordinates) * self.sampling_period)
+            # Sample the signal at the given frequency
+            self.sampled_points = [self.current_loaded_signal.noisy_Y_Coordinates[i] for i in range(0, len(self.current_loaded_signal.noisy_Y_Coordinates), samples_per_period)]
+            # Generate x-coordinate points based on the length of sampled_points
+            self.sampled_Xpoints = np.linspace(self.current_loaded_signal.X_Coordinates[0], self.current_loaded_signal.X_Coordinates[-1], len(self.sampled_points))
+            # if len(sampled_Xpoints) < 2:
+            #     print("Not enough sampled points for interpolation")
+            #     return
+            self.load_graph_1.clear()
+            # Plot the sampled points on load_graph_1
+            self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates, pen = 'b')
+            self.load_graph_1.plot(self.sampled_Xpoints, self.sampled_points, pen=None, symbol='o')
+            # Reconstruct the signal and plot the difference
+            self.reconstruct_signal()
+            self.plot_difference()
+        else:
+            freq = self.get_sampling_frequency()
+            if freq is None:
+                return
+            self.sampling_period = 1 / freq
+            # Calculate the number of samples per period
+            samples_per_period = int(len(self.Composed_Signal.X_Coordinates) * self.sampling_period)
+            # Sample the signal at the given frequency
+            self.sampled_points = [self.Composed_Signal.noisy_Y_Coordinates[i] for i in range(0, len(self.Composed_Signal.noisy_Y_Coordinates), samples_per_period)]
+            # Generate x-coordinate points based on the length of sampled_points
+            self.sampled_Xpoints = np.linspace(self.Composed_Signal.X_Coordinates[0], self.Composed_Signal.X_Coordinates[-1], len(self.sampled_points))
+            # if len(sampled_Xpoints) < 2:
+            #     print("Not enough sampled points for interpolation")
+            #     return
+            self.compose_graph_1.clear()
+            # Plot the sampled points on load_graph_1
+            self.compose_graph_1.plot(self.Composed_Signal.X_Coordinates, self.Composed_Signal.noisy_Y_Coordinates, pen = 'b')
+            self.compose_graph_1.plot(self.sampled_Xpoints, self.sampled_points, pen=None, symbol='o')
+            # Reconstruct the signal and plot the difference
+            self.reconstruct_signal()
+            self.plot_difference()
         
     def ShannonInterpolation(self, input_magnitude, input_time, original_time):
         if len(input_magnitude) != len(input_time):
@@ -97,21 +129,43 @@ class ApplicationManager:
         return output_magnitude
 
     def reconstruct_signal(self):
-        self.reconstructed_signal = self.ShannonInterpolation(self.sampled_points, self.sampled_Xpoints, self.current_loaded_signal.X_Coordinates)
-        self.load_graph_2.clear()
-        self.load_graph_2.plot(self.current_loaded_signal.X_Coordinates, self.reconstructed_signal, pen='r')
+        if self.current_tab == "Load":    
+            self.reconstructed_signal = self.ShannonInterpolation(self.sampled_points, self.sampled_Xpoints, self.sampled_Xpoints)
+            self.load_graph_2.clear()
+            self.load_graph_2.plot(self.sampled_Xpoints, self.reconstructed_signal, pen='r')
+        else:
+            self.reconstructed_signal = self.ShannonInterpolation(self.sampled_points, self.sampled_Xpoints, self.sampled_Xpoints)
+            self.compose_graph_2.clear()
+            self.compose_graph_2.plot(self.sampled_Xpoints, self.reconstructed_signal, pen='r')
         
     def plot_difference(self):
-        # Interpolate self.current_loaded_signal.Y_Coordinates to the length of self.reconstructed_signal
-        #interpolated_Y_Coordinates = np.interp(self.sampled_Xpoints, self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates)
-        # Calculate the difference between the original and reconstructed signals
-        #difference =  self.current_loaded_signal.noisy_Y_Coordinates - np.array(self.reconstructed_signal)
-        # Calculate the difference between the sampled points and the equivalent y-coordinate points
-        difference = [x - y for x, y in zip(self.reconstructed_signal, self.current_loaded_signal.noisy_Y_Coordinates)]
-        # Plot the difference on load_graph_3
-        self.load_graph_3.clear()
-        self.load_graph_3.plot(self.current_loaded_signal.X_Coordinates, difference, pen='g')
-            
+        if self.current_tab == "Load": 
+            # Interpolate self.current_loaded_signal.Y_Coordinates to the length of self.reconstructed_signal
+            interpolated_Y_Coordinates = np.interp(self.sampled_Xpoints, self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates)
+            #interpolated_Y_Coordinates = np.interp(self.sampled_Xpoints, self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates)
+            # Calculate the difference between the original and reconstructed signals
+            difference = interpolated_Y_Coordinates - np.array(self.reconstructed_signal)
+            #difference =  self.current_loaded_signal.noisy_Y_Coordinates - np.array(self.reconstructed_signal)
+            # Calculate the difference between the sampled points and the equivalent y-coordinate points
+            difference = [x - y for x, y in zip(self.reconstructed_signal, self.current_loaded_signal.noisy_Y_Coordinates)]
+            # Plot the difference on load_graph_3
+            self.load_graph_3.clear()
+            self.load_graph_3.plot(self.sampled_Xpoints, difference.tolist(), pen='g')
+            self.load_graph_3.plot(self.sampled_Xpoints, difference, pen='g')
+        else:
+            # Interpolate self.current_loaded_signal.Y_Coordinates to the length of self.reconstructed_signal
+            interpolated_Y_Coordinates = np.interp(self.sampled_Xpoints, self.Composed_Signal.X_Coordinates, self.Composed_Signal.noisy_Y_Coordinates)
+            #interpolated_Y_Coordinates = np.interp(self.sampled_Xpoints, self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates)
+            # Calculate the difference between the original and reconstructed signals
+            difference = interpolated_Y_Coordinates - np.array(self.reconstructed_signal)
+            #difference =  self.current_loaded_signal.noisy_Y_Coordinates - np.array(self.reconstructed_signal)
+            # Calculate the difference between the sampled points and the equivalent y-coordinate points
+            difference = [x - y for x, y in zip(self.reconstructed_signal, self.Composed_Signal.noisy_Y_Coordinates)]
+            # Plot the difference on load_graph_3
+            self.compose_graph_3.clear()
+            self.compose_graph_3.plot(self.sampled_Xpoints, difference.tolist(), pen='g')
+            self.compose_graph_3.plot(self.sampled_Xpoints, difference, pen='g')
+
     def load_update_sampling_slider(self):
         if self.ui_window.Load_Hertz_RadioButton.isChecked():
             self.ui_window.Load_Sampling_Frequency_Slider.setMinimum(1)
@@ -150,6 +204,7 @@ class ApplicationManager:
         noise = [random.gauss(0, noise_std) for _ in range(len(self.current_loaded_signal.Y_Coordinates))]
         self.current_loaded_signal.noisy_Y_Coordinates = [s + n for s, n in zip(self.current_loaded_signal.Y_Coordinates, noise)]
         self.plot_samples()
+
 
     def add_component(self):
         self.component_count += 1
