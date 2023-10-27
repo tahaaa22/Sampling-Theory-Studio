@@ -705,6 +705,7 @@ class Ui_MainWindow(object):
         self.Load_x2Fmax_RadioButton.clicked.connect(lambda : MAESTRO.load_update_sampling_slider())
         self.Compose_Hertz_RadioButton.clicked.connect(lambda: MAESTRO.compose_update_sampling_slider())
         self.Compose_x2Fmax_RadioButton.clicked.connect(lambda: MAESTRO.compose_update_sampling_slider())
+        self.Load_Sampling_Frequency_Slider.valueChanged.connect(lambda: MAESTRO.plot_samples())
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.Load_Signals_ComboBox.currentIndexChanged.connect(lambda: MAESTRO.get_current_loaded_signal_slot(self.Load_Signals_ComboBox.currentIndex()))
 
