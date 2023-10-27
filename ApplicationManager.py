@@ -21,21 +21,8 @@ class ApplicationManager:
         self.current_loaded_signal = None
         self.COMPONENTS = []
         self.Composed_Signal = None
-        self.max_freq = 0
+        self.sampled_Xpoints = None
 
-    @staticmethod
-    def sinc(x):
-        if abs(x) >= np.sqrt(np.sqrt(np.finfo(float).eps)):
-            return np.sin(np.pi * x) / (np.pi * x)
-        else:
-            return 1 - x**2/6 + x**4/120
-
-    def resample(self, ts, signal):
-        def signal_func(t):
-            return sum([s * self.sinc((t - n*ts)/ts) for n, s in enumerate(signal)])
-        return signal_func
-    
-    
     
     def get_current_loaded_signal_slot(self, index):
         self.current_loaded_signal = self.loaded_signals[index]
@@ -59,93 +46,78 @@ class ApplicationManager:
             #self.plot_sine_wave()
             
     def get_sampling_frequency(self):
-        # Calculate the maximum frequency of the loaded signal
-        
-        max_freq = max(np.abs(np.fft.rfft(self.current_loaded_signal.Y_Coordinates)))
-        self.max_freq = max_freq
-        return self.ui_window.Load_Sampling_Frequency_Slider.value() * max_freq
-
-           
-    def plot_sine_wave(self):
-        
-        magnitude_1 = 5
-        frequency_1 = 2
-
-        t = np.linspace(0, 1, 500)
-        signal = magnitude_1 * np.sin(2 * np.pi * frequency_1 * t)
-
-        # Resample the signal
-        resampled_signal = self.resample(1/frequency_1, signal)
-
-        x = np.arange(0, 1, 0.002)
-        y1 = signal
-        y2 = [resampled_signal(i) for i in x]
-
-        self.load_graph_1.clear()
-        self.load_graph_1.plot(x, y1, pen='g')
-        self.load_graph_2.plot(x, y2, pen='b')
-
-        # # Define the parameters of the sine wave
-        # frequency = 5  # Frequency in Hz
-        # duration = 1  # Duration in seconds
-        # sampling_rate = 100  # Sampling rate in Hz (number of samples per second)
-
-        # # Generate the time values for one period of the sine wave
-        # t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
-
-        # # Generate the sine wave
-        # sine_wave = np.sin(2 * np.pi * frequency * t)
-        # self.sampled_points = sine_wave[::sampling_rate]
-
-        # # Plot the sine wave on load_graph_1
-        # self.load_graph_1.plot(t, sine_wave, pen='b')
-
-        # # Set the sine wave as the main signal
-        # self.current_loaded_signal = Classes.Signal(t.tolist(), sine_wave.tolist())
-        #  # Reconstruct the signal and plot the difference
-        # self.reconstruct_signal()
-        # self.plot_difference()
-
-                
+        if self.ui_window.Load_Sampling_Frequency_Slider.value() != None:
+            if self.ui_window.Load_x2Fmax_CheckBox.isChecked():
+                # Calculate the maximum frequency of the loaded signal
+                max_freq = max(np.abs(np.fft.rfft(self.current_loaded_signal.Y_Coordinates)))
+                self.ui_window.Load_Sampling_Frequency_Slider.setMinimum(1)
+                self.ui_window.Load_Sampling_Frequency_Slider.setMaximum(4)
+                self.ui_window.Load_Sampling_Frequency_Slider.setProperty("value", 0)
+                self.ui_window.Load_Sampling_Frequency_Slider.setTickInterval(1)
+                self.ui_window.Load_Sampling_Frequency_LCD.setProperty("intValue", 0)
+                return (self.ui_window.Load_Sampling_Frequency_Slider.value()) * max_freq 
+            elif self.ui_window.Load_Hertz_CheckBox.isChecked():
+                # self.ui_window.Load_Sampling_Frequency_Slider.setMinimum(1)
+                # self.ui_window.Load_Sampling_Frequency_Slider.setMaximum(100)
+                # self.ui_window.Load_Sampling_Frequency_Slider.setProperty("value", 0)
+                # self.ui_window.Load_Sampling_Frequency_Slider.setTickInterval(5)
+                # self.ui_window.Load_Sampling_Frequency_LCD.setProperty("intValue", )
+                #Read the value of the Load_Sampling_Frequency_Slider
+                return self.ui_window.Load_Sampling_Frequency_Slider.value()
+        else:
+            return None 
+       
                 
     def plot_samples(self):
         freq = self.get_sampling_frequency()
         if freq is None:
+
             return
-        # Convert frequency to integer for slicing
-        freq = int(freq)
-        #TODO fix the slicing var it can not be using freq, but instead it have to be proven form freq.
-        # Sample the signal at the given frequency
-        self.sampled_points = self.current_loaded_signal.Y_Coordinates[::freq]
         self.sampling_period = 1 / freq
+        # Calculate the number of samples per period
+        samples_per_period = int(len(self.current_loaded_signal.X_Coordinates) * self.sampling_period)
+        # Sample the signal at the given frequency
+        self.sampled_points = [self.current_loaded_signal.noisy_Y_Coordinates[i] for i in range(0, len(self.current_loaded_signal.noisy_Y_Coordinates), samples_per_period)]
+        # Generate x-coordinate points based on the length of sampled_points
+        self.sampled_Xpoints = np.linspace(self.current_loaded_signal.X_Coordinates[0], self.current_loaded_signal.X_Coordinates[-1], len(self.sampled_points))
+        # if len(sampled_Xpoints) < 2:
+        #     print("Not enough sampled points for interpolation")
+        #     return
         self.load_graph_1.clear()
         # Plot the sampled points on load_graph_1
-        self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.Y_Coordinates, pen = 'b')
-        self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates[::freq], self.sampled_points, pen=None, symbol='o')
+        self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates, pen = 'b')
+        self.load_graph_1.plot(self.sampled_Xpoints, self.sampled_points, pen=None, symbol='o')
         # Reconstruct the signal and plot the difference
         self.reconstruct_signal()
         self.plot_difference()
+        
+    def ShannonInterpolation(self, input_magnitude, input_time, original_time):
+        if len(input_magnitude) != len(input_time):
+            print('Input magnitude and time are not the same length')
+            return
 
-    def whittaker_shannon_interpolation(self, time , samples, period):
-        # Calculate the sum of the product of the samples and the sinc function
-        return sum(sample * np.sinc((time - index * period) / period) for index, sample in enumerate(samples))            
-    
-    
-    # Step 2: Reconstruct the signal using Whittaker-Shannon interpolation formula
+        if len(input_time) != 0:
+            T = input_time[1] - input_time[0]
+
+        sincM = np.tile(original_time, (len(input_time), 1)) - np.tile(input_time[:, np.newaxis], (1, len(original_time)))
+        output_magnitude = np.dot(input_magnitude, np.sinc(sincM/T))
+
+        return output_magnitude
+
     def reconstruct_signal(self):
-        # Use the Whittaker-Shannon interpolation formula to reconstruct the signal
-        self.reconstructed_signal = [self.whittaker_shannon_interpolation(time, self.sampled_points, self.sampling_period) for time in self.current_loaded_signal.X_Coordinates]
-        # Plot the reconstructed signal on load_graph_2
+        self.reconstructed_signal = self.ShannonInterpolation(self.sampled_points, self.sampled_Xpoints, self.sampled_Xpoints)
         self.load_graph_2.clear()
-        self.load_graph_2.plot(self.current_loaded_signal.X_Coordinates, self.reconstructed_signal, pen='r')
+        self.load_graph_2.plot(self.sampled_Xpoints, self.reconstructed_signal, pen='r')
         
     def plot_difference(self):
+        # Interpolate self.current_loaded_signal.Y_Coordinates to the length of self.reconstructed_signal
+        interpolated_Y_Coordinates = np.interp(self.sampled_Xpoints, self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates)
         # Calculate the difference between the original and reconstructed signals
-        difference = np.array(self.current_loaded_signal.Y_Coordinates) - np.array(self.reconstructed_signal)
-        # Plot the difference on load_graph_3\
+        difference = interpolated_Y_Coordinates - np.array(self.reconstructed_signal)
+        # Plot the difference on load_graph_3
         self.load_graph_3.clear()
-        self.load_graph_3.plot(self.current_loaded_signal.X_Coordinates, difference.tolist(), pen='g')
-        
+        self.load_graph_3.plot(self.sampled_Xpoints, difference.tolist(), pen='g')
+            
     def update_max_freq_slider(self):        
         self.Load_Sampling_Frequency_Slider.setMinimum(0)
         self.Load_Sampling_Frequency_Slider.setMaximum(4)
@@ -172,8 +144,10 @@ class ApplicationManager:
         noise_std = math.sqrt(noise_power)
         noise = [random.gauss(0, noise_std) for _ in range(len(self.current_loaded_signal.Y_Coordinates))]
         self.current_loaded_signal.noisy_Y_Coordinates = [s + n for s, n in zip(self.current_loaded_signal.Y_Coordinates, noise)]
-        self.load_graph_1.clear()
-        self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates, pen = 'b')
+        self.plot_samples()
+        # Reconstruct the signal and plot the difference
+        self.reconstruct_signal()
+        self.plot_difference()
 
     
 
