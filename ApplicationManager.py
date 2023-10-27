@@ -102,7 +102,6 @@ class ApplicationManager:
         self.load_graph_3.plot(self.sampled_Xpoints, difference.tolist(), pen='g')
             
     def load_update_sampling_slider(self):
-        print("ENTERED")
         if self.ui_window.Load_Hertz_RadioButton.isChecked():
             self.ui_window.Load_Sampling_Frequency_Slider.setMinimum(1)
             self.ui_window.Load_Sampling_Frequency_Slider.setMaximum(4 * int(self.current_loaded_signal.max_freq))
