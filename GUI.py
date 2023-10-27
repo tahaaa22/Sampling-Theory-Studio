@@ -524,6 +524,7 @@ class Ui_MainWindow(object):
         self.Compose_Sampling_Frequency_Slid.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.Compose_Sampling_Frequency_Slid.setTickInterval(5)
         self.Compose_Sampling_Frequency_Slid.setObjectName("Compose_Sampling_Frequency_Slid")
+        self.Compose_Sampling_Frequency_Slid.valueChanged.connect(lambda: MAESTRO.plot_samples())
         self.horizontalLayout_12.addWidget(self.Compose_Sampling_Frequency_Slid)
         self.Compose_Sampling_Frequency_LCD = QtWidgets.QLCDNumber(self.groupBox)
         font = QtGui.QFont()
