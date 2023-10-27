@@ -94,7 +94,7 @@ p, li { white-space: pre-wrap; }
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="Load">
        <property name="styleSheet">
@@ -545,16 +545,25 @@ color: white</string>
                        <item>
                         <widget class="QSlider" name="Load_Signal_to_Noise_Slider">
                          <property name="minimum">
-                          <number>0</number>
+                          <number>1</number>
                          </property>
                          <property name="maximum">
-                          <number>100</number>
+                          <number>50</number>
                          </property>
                          <property name="value">
-                          <number>0</number>
+                          <number>50</number>
+                         </property>
+                         <property name="sliderPosition">
+                          <number>50</number>
                          </property>
                          <property name="orientation">
                           <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="invertedAppearance">
+                          <bool>false</bool>
+                         </property>
+                         <property name="invertedControls">
+                          <bool>false</bool>
                          </property>
                          <property name="tickPosition">
                           <enum>QSlider::TicksBelow</enum>

@@ -222,12 +222,11 @@ class Ui_MainWindow(object):
         self.Load_Sampling_Frequency_Slider = QtWidgets.QSlider(self.groupBox_2)
         self.Load_Sampling_Frequency_Slider.setMinimum(1)
         self.Load_Sampling_Frequency_Slider.setMaximum(4)
-        self.Load_Sampling_Frequency_Slider.setProperty("value", 0)
+        self.Load_Sampling_Frequency_Slider.setProperty("value", 1)
         self.Load_Sampling_Frequency_Slider.setOrientation(QtCore.Qt.Horizontal)
         self.Load_Sampling_Frequency_Slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.Load_Sampling_Frequency_Slider.setTickInterval(1)
         self.Load_Sampling_Frequency_Slider.setObjectName("Load_Sampling_Frequency_Slider")
-        self.Load_Sampling_Frequency_Slider.valueChanged.connect(lambda: MAESTRO.plot_samples())
         self.horizontalLayout_4.addWidget(self.Load_Sampling_Frequency_Slider)
         self.Load_Sampling_Frequency_LCD = QtWidgets.QLCDNumber(self.groupBox_2)
         font = QtGui.QFont()
@@ -237,7 +236,7 @@ class Ui_MainWindow(object):
         self.Load_Sampling_Frequency_LCD.setStyleSheet("border:none;")
         self.Load_Sampling_Frequency_LCD.setFrameShadow(QtWidgets.QFrame.Plain)
         self.Load_Sampling_Frequency_LCD.setLineWidth(1)
-        self.Load_Sampling_Frequency_LCD.setProperty("intValue", 0)
+        self.Load_Sampling_Frequency_LCD.setProperty("intValue", 1)
         self.Load_Sampling_Frequency_LCD.setObjectName("Load_Sampling_Frequency_LCD")
         
         self.horizontalLayout_4.addWidget(self.Load_Sampling_Frequency_LCD)
@@ -533,7 +532,7 @@ class Ui_MainWindow(object):
         self.Compose_Sampling_Frequency_LCD.setFont(font)
         self.Compose_Sampling_Frequency_LCD.setStyleSheet("border:none;")
         self.Compose_Sampling_Frequency_LCD.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.Compose_Sampling_Frequency_LCD.setProperty("intValue", 0)
+        self.Compose_Sampling_Frequency_LCD.setProperty("intValue", 1)
         self.Compose_Sampling_Frequency_LCD.setObjectName("Compose_Sampling_Frequency_LCD")
         self.horizontalLayout_12.addWidget(self.Compose_Sampling_Frequency_LCD)
         self.verticalLayout.addLayout(self.horizontalLayout_12)
@@ -694,7 +693,6 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
@@ -704,7 +702,13 @@ class Ui_MainWindow(object):
         self.Load_Signal_to_Noise_Slider.valueChanged['int'].connect(self.Load_Signal_to_Noise_LCD.display) # type: ignore
         self.Compose_Sampling_Frequency_Slid.valueChanged['int'].connect(self.Compose_Sampling_Frequency_LCD.display) # type: ignore
         self.Load_Sampling_Frequency_Slider.valueChanged['int'].connect(self.Load_Sampling_Frequency_LCD.display) # type: ignore
+        self.Load_Hertz_RadioButton.clicked.connect(lambda : MAESTRO.load_update_sampling_slider())
+        self.Load_x2Fmax_RadioButton.clicked.connect(lambda : MAESTRO.load_update_sampling_slider())
+        self.Compose_Hertz_RadioButton.clicked.connect(lambda: MAESTRO.compose_update_sampling_slider())
+        self.Compose_x2Fmax_RadioButton.clicked.connect(lambda: MAESTRO.compose_update_sampling_slider())
+        self.Load_Sampling_Frequency_Slider.valueChanged.connect(lambda: MAESTRO.plot_samples())
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.Load_Signals_ComboBox.currentIndexChanged.connect(lambda: MAESTRO.get_current_loaded_signal_slot(self.Load_Signals_ComboBox.currentIndex()))
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
