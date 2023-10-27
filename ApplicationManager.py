@@ -124,6 +124,7 @@ class ApplicationManager:
         self.sampling_period = 1 / freq
         self.load_graph_1.clear()
         # Plot the sampled points on load_graph_1
+        self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.Y_Coordinates, pen = 'b')
         self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates[::freq], self.sampled_points, pen=None, symbol='o')
         # Reconstruct the signal and plot the difference
         self.reconstruct_signal()
