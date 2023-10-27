@@ -47,14 +47,17 @@ class ApplicationManager:
             
     def get_sampling_frequency(self):
         if self.ui_window.Load_Sampling_Frequency_Slider.value():
-            #Read the value of the Load_Sampling_Frequency_Slider
-            return self.ui_window.Load_Sampling_Frequency_Slider.value()
-       
-                
+            if self.ui_window.Load_x2Fmax_RadioButton.isChecked():
+                return self.ui_window.Load_Sampling_Frequency_Slider.value() * self.current_loaded_signal.max_freq
+            elif self.ui_window.Load_Hertz_RadioButton.isChecked():
+                return self.ui_window.Load_Sampling_Frequency_Slider.value()
+        else:
+            return None
+
+
     def plot_samples(self):
         freq = self.get_sampling_frequency()
         if freq is None:
-
             return
         self.sampling_period = 1 / freq
         # Calculate the number of samples per period
