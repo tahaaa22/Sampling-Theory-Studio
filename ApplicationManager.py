@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QFileDialog
 import wfdb, numpy as np, math, random
+import pyqtgraph as pg
 import Classes
+import csv
 class ApplicationManager:
     def __init__(self, ui_window, load_graph_1, load_graph_2, load_graph_3, compose_graph_1, compose_graph_2, compose_graph_3):
         # Graph Numbers Guide   1 -> Original -----  2 -> Reconstructed ----- 3 -> Difference
@@ -23,6 +25,7 @@ class ApplicationManager:
         self.sampled_Xpoints = None
         self.current_tab = "Load"
         self.samples_per_period = None
+        self.counter = 0
 
     
     def get_current_loaded_signal_slot(self, index):
@@ -77,12 +80,12 @@ class ApplicationManager:
                 return
             self.sampling_period = float(1 / freq)
             # Calculate the number of samples per period
-            self.samples_per_period = float(len(self.current_loaded_signal.X_Coordinates) * self.sampling_period)
+            self.samples_per_period = int(len(self.current_loaded_signal.X_Coordinates) * self.sampling_period)
             # Sample the signal at the given frequency
-            self.sampled_points = [self.current_loaded_signal.noisy_Y_Coordinates[i] for i in range(0, len(self.current_loaded_signal.noisy_Y_Coordinates), int(self.samples_per_period))]
-            self.sampled_points = np.array(self.sampled_points)
+            self.sampled_points = [self.current_loaded_signal.noisy_Y_Coordinates[i] for i in range(0, len(self.current_loaded_signal.noisy_Y_Coordinates), self.samples_per_period)]
             # Generate x-coordinate points based on the length of sampled_points
-            self.sampled_Xpoints = [self.current_loaded_signal.X_Coordinates[i] for i in range(0, len(self.current_loaded_signal.noisy_Y_Coordinates), int(self.samples_per_period))]
+            #self.sampled_Xpoints = np.linspace(self.current_loaded_signal.X_Coordinates[0], self.current_loaded_signal.X_Coordinates[-1], len(self.sampled_points))
+            self.sampled_Xpoints = [self.current_loaded_signal.X_Coordinates[i] for i in range(0, len(self.current_loaded_signal.noisy_Y_Coordinates), self.samples_per_period)]
             self.sampled_Xpoints = np.array(self.sampled_Xpoints)  # Convert to a NumPy array
             self.load_graph_1.clear()
             # Plot the sampled points on load_graph_1
@@ -97,13 +100,16 @@ class ApplicationManager:
                 return
             self.sampling_period = float(1 / freq)
             # Calculate the number of samples per period
-            self.samples_per_period = float(len(self.Composed_Signal.X_Coordinates) * self.sampling_period)
+            self.samples_per_period = int(len(self.Composed_Signal.X_Coordinates) * self.sampling_period)
             # Sample the signal at the given frequency
-            self.sampled_points = [self.Composed_Signal.noisy_Y_Coordinates[i] for i in range(0, len(self.Composed_Signal.noisy_Y_Coordinates), int(self.samples_per_period))]
-            self.sampled_points = np.array(self.sampled_points)
+            self.sampled_points = [self.Composed_Signal.noisy_Y_Coordinates[i] for i in range(0, len(self.Composed_Signal.noisy_Y_Coordinates), self.samples_per_period)]
             # Generate x-coordinate points based on the length of sampled_points
-            self.sampled_Xpoints = [self.Composed_Signal.X_Coordinates[i] for i in range(0, len(self.Composed_Signal.noisy_Y_Coordinates), int(self.samples_per_period))]
+            self.sampled_Xpoints = [self.Composed_Signal.X_Coordinates[i] for i in range(0, len(self.Composed_Signal.noisy_Y_Coordinates), self.samples_per_period)]
             self.sampled_Xpoints = np.array(self.sampled_Xpoints)  # Convert to a NumPy array
+            #self.sampled_Xpoints = np.linspace(self.Composed_Signal.X_Coordinates[0], self.Composed_Signal.X_Coordinates[-1], len(self.sampled_points))
+            # if len(sampled_Xpoints) < 2:
+            #     print("Not enough sampled points for interpolation")
+            #     return
             self.compose_graph_1.clear()
             # Plot the sampled points on load_graph_1
             self.compose_graph_1.plot(self.Composed_Signal.X_Coordinates, self.Composed_Signal.noisy_Y_Coordinates, pen = 'b')
@@ -118,7 +124,7 @@ class ApplicationManager:
             return
 
         if len(input_time) != 0:
-                T = input_time[1] - input_time[0]
+            T = input_time[1] - input_time[0]
 
         sincM = np.tile(original_time, (len(input_time), 1)) - np.tile(input_time[:, np.newaxis], (1, len(original_time)))
         output_magnitude = np.dot(input_magnitude, np.sinc(sincM/T))
@@ -137,12 +143,12 @@ class ApplicationManager:
         
     def plot_difference(self):
         if self.current_tab == "Load": 
-            difference = [y - x for y, x in zip(self.reconstructed_signal, self.current_loaded_signal.noisy_Y_Coordinates)]
+            difference = [x - y for x, y in zip(self.reconstructed_signal, self.current_loaded_signal.noisy_Y_Coordinates)]
             # Plot the difference on load_graph_3
             self.load_graph_3.clear()
             self.load_graph_3.plot(self.current_loaded_signal.X_Coordinates, difference, pen='g')
         else:
-            difference = [y - x for y, x in zip(self.reconstructed_signal, self.Composed_Signal.noisy_Y_Coordinates)]
+            difference = [x - y for x, y in zip(self.reconstructed_signal, self.Composed_Signal.noisy_Y_Coordinates)]
             # Plot the difference on compose_graph_3
             self.compose_graph_3.clear()
             self.compose_graph_3.plot(self.Composed_Signal.X_Coordinates, difference, pen='g')
@@ -152,11 +158,11 @@ class ApplicationManager:
 
             if self.ui_window.Load_Hertz_RadioButton.isChecked():
                 self.ui_window.Load_Sampling_Frequency_Slider.setMinimum(1)
-                self.ui_window.Load_Sampling_Frequency_Slider.setMaximum(6 * int(self.current_loaded_signal.max_freq))
-                self.ui_window.Load_Sampling_Frequency_Slider.setTickInterval(int(6 * self.current_loaded_signal.max_freq / 10))
+                self.ui_window.Load_Sampling_Frequency_Slider.setMaximum(4 * int(self.current_loaded_signal.max_freq))
+                self.ui_window.Load_Sampling_Frequency_Slider.setTickInterval(int(4 * self.current_loaded_signal.max_freq / 5))
             else:
                 self.ui_window.Load_Sampling_Frequency_Slider.setMinimum(1)
-                self.ui_window.Load_Sampling_Frequency_Slider.setMaximum(6)
+                self.ui_window.Load_Sampling_Frequency_Slider.setMaximum(4)
                 self.ui_window.Load_Sampling_Frequency_Slider.setTickInterval(1)
         else:
 
@@ -167,13 +173,23 @@ class ApplicationManager:
                     if component.frequency > max_component_freq:
                         max_component_freq = component.frequency
                 # self.Composed_Signal.max_freq = max_component_freq
-                self.ui_window.Compose_Sampling_Frequency_Slider.setMaximum(6 * int(max_component_freq))
-                self.ui_window.Compose_Sampling_Frequency_Slider.setTickInterval(int(6 * max_component_freq / 10))
+                self.ui_window.Compose_Sampling_Frequency_Slider.setMaximum(4 * int(max_component_freq))
+                self.ui_window.Compose_Sampling_Frequency_Slider.setTickInterval(int(4 * max_component_freq / 5))
             else:
                 self.ui_window.Compose_Sampling_Frequency_Slider.setMinimum(1)
-                self.ui_window.Compose_Sampling_Frequency_Slider.setMaximum(6)
+                self.ui_window.Compose_Sampling_Frequency_Slider.setMaximum(4)
                 self.ui_window.Compose_Sampling_Frequency_Slider.setTickInterval(1)
 
+
+    # def compose_update_sampling_slider(self):
+    #     if self.ui_window.Compose_Hertz_RadioButton.isChecked():
+    #         self.ui_window.Compose_Sampling_Frequency_Slider.setMinimum(1)
+    #         self.ui_window.Compose_Sampling_Frequency_Slider.setMaximum(4 * int(self.Composed_Signal.max_freq))
+    #         self.ui_window.Compose_Sampling_Frequency_Slider.setTickInterval(int(4 * self.Composed_Signal.max_freq / 5))
+    #     else:
+    #         self.ui_window.Compose_Sampling_Frequency_Slider.setMinimum(1)
+    #         self.ui_window.Compose_Sampling_Frequency_Slider.setMaximum(4)
+    #         self.ui_window.Compose_Sampling_Frequency_Slider.setTickInterval(1)
 
     
 
@@ -185,6 +201,8 @@ class ApplicationManager:
             noise = [random.gauss(0, noise_std) for _ in range(len(self.Composed_Signal.Y_Coordinates))]
             self.Composed_Signal.noisy_Y_Coordinates = [s + n for s, n in zip(self.Composed_Signal.Y_Coordinates, noise)]
             self.plot_samples()
+            # self.compose_graph_1.clear()
+            # self.compose_graph_1.plot(self.Composed_Signal.X_Coordinates,self.Composed_Signal.noisy_Y_Coordinates, pen='g')
             return
         signal_power = sum(y ** 2 for y in self.current_loaded_signal.Y_Coordinates) / len(self.current_loaded_signal.Y_Coordinates)
         noise_power = signal_power / (10**(SNR_value / 10))
@@ -252,7 +270,7 @@ class ApplicationManager:
 
     def update_signal(self):
 
-        signal_X = np.linspace(0, 1, 500)
+        signal_X = np.linspace(0, 1, 1000)
         signal_Y = 0
         for component in self.COMPONENTS:
             signal_Y += component.magnitude * np.sin(2 * np.pi * component.frequency * signal_X)
@@ -264,3 +282,16 @@ class ApplicationManager:
         for component in self.COMPONENTS:
             if component.frequency > self.Composed_Signal.max_freq:
                 self.Composed_Signal.max_freq = component.frequency
+
+
+    def save_composed_signal(self):
+        
+        self.counter+=1
+        filename = f'Composed_Signal_{self.counter}.csv'
+            
+        with open(filename, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['x', 'y']) 
+
+            for i in range(len(self.Composed_Signal.X_Coordinates)):
+                writer.writerow([self.Composed_Signal.X_Coordinates[i], self.Composed_Signal.Y_Coordinates[i]])
