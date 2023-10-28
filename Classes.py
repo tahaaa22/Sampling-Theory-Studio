@@ -4,6 +4,8 @@ class Signal:
         self.Y_Coordinates = Y_list
         self.noisy_Y_Coordinates = Y_list
         self.max_freq = 0
+        self.sampling_rate = 0
+        self.noise = 50
 
 
 class Component:

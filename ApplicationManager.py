@@ -65,6 +65,7 @@ class ApplicationManager:
             
     def get_sampling_frequency(self):
         if self.current_tab == "Load":
+            self.current_loaded_signal.sampling_rate = self.ui_window.Load_Sampling_Frequency_Slider.value()
             if self.ui_window.Load_Sampling_Frequency_Slider.value():
                 if self.ui_window.Load_Fmax_RadioButton.isChecked():
                     return self.ui_window.Load_Sampling_Frequency_Slider.value() * self.current_loaded_signal.max_freq
@@ -194,9 +195,6 @@ class ApplicationManager:
                 self.ui_window.Compose_Sampling_Frequency_Slider.setMaximum(6)
                 self.ui_window.Compose_Sampling_Frequency_Slider.setTickInterval(1)
 
-
-    
-
     def add_noise(self, SNR_value, compose=False):
         if compose:
             signal_power = sum(y ** 2 for y in self.Composed_Signal.Y_Coordinates) / len(self.Composed_Signal.Y_Coordinates)
@@ -206,13 +204,14 @@ class ApplicationManager:
             self.Composed_Signal.noisy_Y_Coordinates = [s + n for s, n in zip(self.Composed_Signal.Y_Coordinates, noise)]
             self.plot_samples()
             return
+        
+        self.current_loaded_signal.noise = self.ui_window.Load_Signal_to_Noise_Slider.value()
         signal_power = sum(y ** 2 for y in self.current_loaded_signal.Y_Coordinates) / len(self.current_loaded_signal.Y_Coordinates)
         noise_power = signal_power / (10**(SNR_value / 10))
         noise_std = math.sqrt(noise_power)
         noise = [random.gauss(0, noise_std) for _ in range(len(self.current_loaded_signal.Y_Coordinates))]
         self.current_loaded_signal.noisy_Y_Coordinates = [s + n for s, n in zip(self.current_loaded_signal.Y_Coordinates, noise)]
         self.plot_samples()
-
 
     def add_component(self):
         self.component_count += 1
@@ -226,7 +225,6 @@ class ApplicationManager:
 
         new_component = Classes.Component()
         self.COMPONENTS.append(new_component)
-
 
     def remove_component(self):
         if self.component_count == 1:
@@ -245,14 +243,20 @@ class ApplicationManager:
 
         self.update_signal()
 
-
     def update_sliders(self):
-        selected_index = self.ui_window.Compose_Components_ComboBox.currentIndex()
-        selected_component = self.COMPONENTS[selected_index]
+        if self.current_tab == "Load":
+            self.ui_window.Load_Sampling_Frequency_Slider.setValue(self.current_loaded_signal.sampling_rate)
+            self.ui_window.Load_Signal_to_Noise_Slider.setValue(self.current_loaded_signal.noise)
+            self.load_graph_2.clear()
+            self.load_graph_3.clear()
+            self.reconstruct_signal()
+            self.plot_difference()
+        else:    
+            selected_index = self.ui_window.Compose_Components_ComboBox.currentIndex()
+            selected_component = self.COMPONENTS[selected_index]
 
-        self.ui_window.Compose_Signal_Magnitude_Slider.setValue(selected_component.magnitude)
-        self.ui_window.Compose_Signal_Frequency_Slider.setValue(selected_component.frequency)
-
+            self.ui_window.Compose_Signal_Magnitude_Slider.setValue(selected_component.magnitude)
+            self.ui_window.Compose_Signal_Frequency_Slider.setValue(selected_component.frequency)
 
     def update_magnitude(self):
         selected_index = self.ui_window.Compose_Components_ComboBox.currentIndex()
@@ -261,14 +265,12 @@ class ApplicationManager:
         selected_component.magnitude = self.ui_window.Compose_Signal_Magnitude_Slider.value()
         self.update_signal()
 
-
     def update_frequency(self):
         selected_index = self.ui_window.Compose_Components_ComboBox.currentIndex()
         selected_component = self.COMPONENTS[selected_index]
 
         selected_component.frequency = self.ui_window.Compose_Signal_Frequency_Slider.value()
         self.update_signal()
-
 
     def update_signal(self):
 
@@ -284,7 +286,6 @@ class ApplicationManager:
         for component in self.COMPONENTS:
             if component.frequency > self.Composed_Signal.max_freq:
                 self.Composed_Signal.max_freq = component.frequency
-
 
     def save_composed_signal(self):
 

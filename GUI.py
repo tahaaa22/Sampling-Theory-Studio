@@ -723,6 +723,7 @@ class Ui_MainWindow(object):
         self.Compose_Save_Button.clicked.connect(lambda : MAESTRO.save_composed_signal())
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.Load_Signals_ComboBox.currentIndexChanged.connect(lambda: MAESTRO.get_current_loaded_signal_slot(self.Load_Signals_ComboBox.currentIndex()))
+        self.Load_Signals_ComboBox.currentIndexChanged.connect(lambda: MAESTRO.update_sliders())
         self.tabWidget.tabBarClicked.connect(lambda : MAESTRO.update_current_tab())
 
     def retranslateUi(self, MainWindow):
