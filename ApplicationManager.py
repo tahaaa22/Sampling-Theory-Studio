@@ -82,10 +82,9 @@ class ApplicationManager:
             # Sample the signal at the given frequency
             self.sampled_points = [self.current_loaded_signal.noisy_Y_Coordinates[i] for i in range(0, len(self.current_loaded_signal.noisy_Y_Coordinates), self.samples_per_period)]
             # Generate x-coordinate points based on the length of sampled_points
-            self.sampled_Xpoints = np.linspace(self.current_loaded_signal.X_Coordinates[0], self.current_loaded_signal.X_Coordinates[-1], len(self.sampled_points))
-            # if len(sampled_Xpoints) < 2:
-            #     print("Not enough sampled points for interpolation")
-            #     return
+            #self.sampled_Xpoints = np.linspace(self.current_loaded_signal.X_Coordinates[0], self.current_loaded_signal.X_Coordinates[-1], len(self.sampled_points))
+            self.sampled_Xpoints = [self.current_loaded_signal.X_Coordinates[i] for i in range(0, len(self.current_loaded_signal.noisy_Y_Coordinates), self.samples_per_period)]
+            self.sampled_Xpoints = np.array(self.sampled_Xpoints)  # Convert to a NumPy array
             self.load_graph_1.clear()
             # Plot the sampled points on load_graph_1
             self.load_graph_1.plot(self.current_loaded_signal.X_Coordinates, self.current_loaded_signal.noisy_Y_Coordinates, pen = 'b')
@@ -103,7 +102,9 @@ class ApplicationManager:
             # Sample the signal at the given frequency
             self.sampled_points = [self.Composed_Signal.noisy_Y_Coordinates[i] for i in range(0, len(self.Composed_Signal.noisy_Y_Coordinates), self.samples_per_period)]
             # Generate x-coordinate points based on the length of sampled_points
-            self.sampled_Xpoints = np.linspace(self.Composed_Signal.X_Coordinates[0], self.Composed_Signal.X_Coordinates[-1], len(self.sampled_points))
+            self.sampled_Xpoints = [self.Composed_Signal.X_Coordinates[i] for i in range(0, len(self.Composed_Signal.noisy_Y_Coordinates), self.samples_per_period)]
+            self.sampled_Xpoints = np.array(self.sampled_Xpoints)  # Convert to a NumPy array
+            #self.sampled_Xpoints = np.linspace(self.Composed_Signal.X_Coordinates[0], self.Composed_Signal.X_Coordinates[-1], len(self.sampled_points))
             # if len(sampled_Xpoints) < 2:
             #     print("Not enough sampled points for interpolation")
             #     return
