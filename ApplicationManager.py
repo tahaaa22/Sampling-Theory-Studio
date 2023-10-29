@@ -56,10 +56,12 @@ class ApplicationManager:
 
             self.loaded_signals.append(Classes.Signal(X_Coordinates, Y_Coordinates))
             self.current_loaded_signal = self.loaded_signals[-1]
+            
             if File_Path[-4:] == ".csv":
                 self.current_loaded_signal.max_freq = max_frequency[0]
             else:
                 self.current_loaded_signal.max_freq = max(np.abs(np.fft.rfft(self.current_loaded_signal.Y_Coordinates)))
+            
             if len(self.loaded_signals) > 1:
                 Temporary_String = f"Signal {len(self.loaded_signals)}"
                 self.ui_window.Load_Signals_ComboBox.addItem(Temporary_String)
