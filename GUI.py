@@ -221,7 +221,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.Load_Sampling_Frequency_Slider = QtWidgets.QSlider(self.groupBox_2)
         self.Load_Sampling_Frequency_Slider.setMinimum(1)
-        self.Load_Sampling_Frequency_Slider.setMaximum(4)
+        self.Load_Sampling_Frequency_Slider.setMaximum(6)
         self.Load_Sampling_Frequency_Slider.setProperty("value", 1)
         self.Load_Sampling_Frequency_Slider.setOrientation(QtCore.Qt.Horizontal)
         self.Load_Sampling_Frequency_Slider.setTickPosition(QtWidgets.QSlider.TicksBelow)

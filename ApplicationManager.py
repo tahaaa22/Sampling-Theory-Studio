@@ -43,10 +43,11 @@ class ApplicationManager:
         File_Path, _ = QFileDialog.getOpenFileName(None, "Browse Signal", "", "All Files (*)")
         if File_Path:
             if File_Path[-4:] == ".csv":
-                Coordinates_List = ["x", "y"]
+                Coordinates_List = ["x", "y", "f"]
                 Signal = pd.read_csv(File_Path, usecols=Coordinates_List)
                 X_Coordinates = Signal["x"]
                 Y_Coordinates = Signal["y"]
+                max_frequency = Signal["f"]
 
             else:
                 Record = wfdb.rdrecord(File_Path[:-4])
@@ -55,13 +56,17 @@ class ApplicationManager:
 
             self.loaded_signals.append(Classes.Signal(X_Coordinates, Y_Coordinates))
             self.current_loaded_signal = self.loaded_signals[-1]
-            self.current_loaded_signal.max_freq = max(np.abs(np.fft.rfft(self.current_loaded_signal.Y_Coordinates)))
+            if File_Path[-4:] == ".csv":
+                self.current_loaded_signal.max_freq = max_frequency[0]
+            else:
+                self.current_loaded_signal.max_freq = max(np.abs(np.fft.rfft(self.current_loaded_signal.Y_Coordinates)))
             if len(self.loaded_signals) > 1:
                 Temporary_String = f"Signal {len(self.loaded_signals)}"
                 self.ui_window.Load_Signals_ComboBox.addItem(Temporary_String)
                 self.ui_window.Load_Signals_ComboBox.setCurrentIndex(len(self.loaded_signals) - 1)
             self.load_graph_1.clear()
             self.load_graph_1.plot(X_Coordinates, Y_Coordinates, pen='b')
+            self.update_sampling_slider()
             
     def get_sampling_frequency(self):
         if self.current_tab == "Load":
@@ -295,7 +300,7 @@ class ApplicationManager:
 
         with open(filename, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow(['x', 'y'])
+            writer.writerow(['x', 'y', 'max_frequency'])
 
             for i in range(len(self.Composed_Signal.X_Coordinates)):
-                writer.writerow([self.Composed_Signal.X_Coordinates[i], self.Composed_Signal.Y_Coordinates[i]])
+                writer.writerow([self.Composed_Signal.X_Coordinates[i], self.Composed_Signal.Y_Coordinates[i], self.Composed_Signal.max_freq])
