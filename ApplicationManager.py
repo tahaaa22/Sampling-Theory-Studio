@@ -218,6 +218,7 @@ class ApplicationManager:
         if self.component_count == 1:
             new_component = Classes.Component()
             self.COMPONENTS.append(new_component)
+            self.update_sampling_slider()
             return
 
         Temporary_String = f"Component {self.component_count}"
