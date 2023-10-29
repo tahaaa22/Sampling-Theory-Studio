@@ -43,7 +43,6 @@ pip install pyqt5 wfdb pandas numpy
 3. Launch the Sampling Theory Studio application:
 
 ```shell
-Copy
 python Application.py
 ```
 ## Usage
